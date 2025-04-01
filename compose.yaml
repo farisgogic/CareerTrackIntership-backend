@@ -1,11 +1,15 @@
+version: '3.8'
+
 services:
-  postgres:
-    image: 'postgres:latest'
-    container_name: 'postgres_db'
+  backend:
+    build: .
+    container_name: career_progression_backend
     restart: always
-    environment:
-      - 'POSTGRES_DB=mydatabase'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=myuser'
     ports:
-      - '5432'
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://${DB_HOST}/${DB_NAME}?sslmode=require
+      - SPRING_DATASOURCE_USERNAME=${DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+    env_file:
+      - .env
