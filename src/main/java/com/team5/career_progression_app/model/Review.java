@@ -28,6 +28,15 @@ public class Review {
     @JoinColumn(name = "user_id")
     private User user;
 
+    // Constructors
+
+    public Review() {}
+
+    public Review(String feedback, User user) {
+        this.feedback = feedback;
+        this.user = user;
+    }
+
     // @PrePersist & @PreUpdate
 
     @PrePersist

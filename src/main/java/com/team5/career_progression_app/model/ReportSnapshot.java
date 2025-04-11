@@ -19,6 +19,14 @@ public class ReportSnapshot {
     @Column(name = "report_data")
     private String reportData;
 
+    // Constructors
+
+    public ReportSnapshot() {}
+
+    public ReportSnapshot(String reportData) {
+        this.reportData = reportData;
+    }
+
     // @PrePersist
 
     @PrePersist

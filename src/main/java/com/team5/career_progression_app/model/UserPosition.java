@@ -24,6 +24,16 @@ public class UserPosition {
     @JoinColumn(name = "position_id")
     private Position position;
 
+    // Constructors
+
+    public UserPosition() {}
+
+    public UserPosition(Integer level, User user, Position position) {
+        this.level = level;
+        this.user = user;
+        this.position = position;
+    }
+
     // Getters and Setters
 
     public Integer getId() {

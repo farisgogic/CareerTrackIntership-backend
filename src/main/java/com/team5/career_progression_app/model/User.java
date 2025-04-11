@@ -2,6 +2,7 @@ package com.team5.career_progression_app.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -57,6 +58,27 @@ public class User {
 
     @OneToMany(mappedBy = "author")
     private List<TaskComment> taskComments;
+
+    // Constructors
+
+    public User() {}
+
+    public User(String firstName, String lastName, String email, Role role) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.role = role;
+        this.reviews = new ArrayList<>();
+        this.receivedReports = new ArrayList<>();
+        this.notifications = new ArrayList<>();
+        this.promotionRequests = new ArrayList<>();
+        this.teams = new ArrayList<>();
+        this.teamMemberships = new ArrayList<>();
+        this.userPositions = new ArrayList<>();
+        this.assignedTasks = new ArrayList<>();
+        this.comments = new ArrayList<>();
+        this.taskComments = new ArrayList<>();
+    }
 
     // Getters and Setters
 

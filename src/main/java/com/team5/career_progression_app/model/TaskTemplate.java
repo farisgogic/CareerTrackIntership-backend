@@ -2,6 +2,7 @@ package com.team5.career_progression_app.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,6 +27,17 @@ public class TaskTemplate {
 
     @OneToMany(mappedBy = "template")
     private List<Task> tasks;
+
+    // Constructors
+
+    public TaskTemplate() {}
+
+    public TaskTemplate(String name, String description, String taskRequirements) {
+        this.name = name;
+        this.description = description;
+        this.taskRequirements = taskRequirements;
+        this.tasks = new ArrayList<Task>();
+    }
 
     // Getters and Setters
 

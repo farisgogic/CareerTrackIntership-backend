@@ -2,6 +2,7 @@ package com.team5.career_progression_app.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,6 +25,16 @@ public class Team {
 
     @OneToMany(mappedBy = "team")
     private List<TeamMembership> memberships;
+
+    // Constructors
+
+    public Team() {}
+
+    public Team(String name, User lead) {
+        this.name = name;
+        this.lead = lead;
+        this.memberships = new ArrayList<TeamMembership>();
+    }
 
     // Getters and Setters
 

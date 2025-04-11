@@ -29,6 +29,15 @@ public class PromotionRequest {
     @JoinColumn(name = "user_id")
     private User user;
 
+    // Constructors
+
+    public PromotionRequest() {}
+
+    public PromotionRequest(PromotionStatus status, User user) {
+        this.status = status;
+        this.user = user;
+    }
+
     // @PrePersist & @PreUpdate
 
     @PrePersist

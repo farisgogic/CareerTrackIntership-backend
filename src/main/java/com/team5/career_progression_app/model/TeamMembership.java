@@ -20,6 +20,15 @@ public class TeamMembership {
     @JoinColumn(name = "team_id")
     private Team team;
 
+    // Constructors
+
+    public TeamMembership() {}
+
+    public TeamMembership(User user, Team team) {
+        this.user = user;
+        this.team = team;
+    }
+
     // Getters and Setters
 
     public Long getId() {

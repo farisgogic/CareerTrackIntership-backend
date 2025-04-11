@@ -36,6 +36,16 @@ public class TaskComment {
     @JoinColumn(name = "author_id")
     private User author;
 
+    // Constructors
+
+    public TaskComment() {}
+
+    public TaskComment(String message, Task task, User user, User author) {
+        this.message = message;
+        this.task = task;
+        this.user = user;
+    }
+
     // @PrePersist & @PreUpdate
 
     @PrePersist

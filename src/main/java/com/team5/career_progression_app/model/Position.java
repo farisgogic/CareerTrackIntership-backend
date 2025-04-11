@@ -2,6 +2,7 @@ package com.team5.career_progression_app.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,6 +21,15 @@ public class Position {
 
     @OneToMany(mappedBy = "position")
     private List<UserPosition> userPositions;
+
+    // Constructors
+
+    public Position() {}
+
+    public Position(String name) {
+        this.name = name;
+        userPositions = new ArrayList<>();
+    }
 
     // Getters and Setters
 

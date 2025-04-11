@@ -3,6 +3,7 @@ package com.team5.career_progression_app.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -41,6 +42,19 @@ public class Task {
 
     @OneToMany(mappedBy = "task")
     private List<TaskComment> comments;
+
+    // Constructors
+
+    public Task() {}
+
+    public Task(String title, String description, Status status, User assignedTo, TaskTemplate template) {
+        this.title = title;
+        this.description = description;
+        this.status = status;
+        this.assignedTo = assignedTo;
+        this.template = template;
+        this.comments = new ArrayList<>();
+    }
 
     // @PrePersist & @PreUpdate
 

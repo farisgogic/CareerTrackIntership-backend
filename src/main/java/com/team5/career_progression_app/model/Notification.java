@@ -25,6 +25,15 @@ public class Notification {
     @JoinColumn(name = "recipient_id")
     private User recipient;
 
+    // Constructors
+
+    public Notification() {}
+
+    public Notification(String message, User recipient) {
+        this.message = message;
+        this.recipient = recipient;
+    }
+
     // @PrePersist
 
     @PrePersist

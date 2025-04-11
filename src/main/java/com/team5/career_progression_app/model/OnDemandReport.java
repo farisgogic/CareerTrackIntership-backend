@@ -24,6 +24,15 @@ public class OnDemandReport {
     @JoinColumn(name = "recipient_id")
     private User recipient;
 
+    // Constructors
+
+    public OnDemandReport() {}
+
+    public OnDemandReport(String data, User recipient) {
+        this.data = data;
+        this.recipient = recipient;
+    }
+
     // @PrePersist
 
     @PrePersist
