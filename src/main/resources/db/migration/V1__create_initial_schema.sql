@@ -1,131 +1,133 @@
--- Create ENUM type for Role
-CREATE TYPE "role_enum" AS ENUM ('Employee', 'Team Lead', 'Lead of Leads', 'Admin', 'CTO');
+-- Create table for Roles
+CREATE TABLE "Role" (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name VARCHAR UNIQUE NOT NULL
+);
 
--- Create Users table
-CREATE TABLE "Users" (
-    "id" SERIAL PRIMARY KEY,
-    "first_name" VARCHAR(255),
-    "last_name" VARCHAR(255),
-    "email" VARCHAR(255),
-    "role" "role_enum"
+-- Create table for Permissions
+CREATE TABLE "Permission" (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name VARCHAR UNIQUE NOT NULL
+);
+
+-- Create table for Role-Permission relationship
+CREATE TABLE "RolePermission" (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  role_id INT REFERENCES "Role"(id),
+  permission_id INT REFERENCES "Permission"(id)
+);
+
+-- Create User table
+CREATE TABLE "User" (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  first_name VARCHAR,
+  last_name VARCHAR,
+  email VARCHAR UNIQUE NOT NULL,
+  role_id INT REFERENCES "Role"(id)
 );
 
 -- Create TaskTemplate table
 CREATE TABLE "TaskTemplate" (
-    "id" SERIAL PRIMARY KEY,
-    "name" VARCHAR(255),
-    "description" TEXT,
-    "task_requirements" TEXT
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name VARCHAR,
+  description VARCHAR,
+  task_requirements VARCHAR
 );
-
--- Create ENUM type for Task status
-CREATE TYPE "task_status_enum" AS ENUM ('Todo', 'In Progress', 'In Review', 'Done');
 
 -- Create Task table
 CREATE TABLE "Task" (
-    "id" SERIAL PRIMARY KEY,
-    "title" VARCHAR(255),
-    "description" TEXT,
-    "status" "task_status_enum",
-    "created_at" TIMESTAMPTZ,
-    "updated_at" TIMESTAMPTZ,
-    "assigned_to" INT,
-    "template_id" INT,
-    FOREIGN KEY ("assigned_to") REFERENCES "Users"("id"),
-    FOREIGN KEY ("template_id") REFERENCES "TaskTemplate"("id")
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  title VARCHAR,
+  description VARCHAR,
+  status VARCHAR,
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP,
+  assigned_to INT REFERENCES "User"(id),
+  template_id INT REFERENCES "TaskTemplate"(id)
 );
 
 -- Create TaskComment table
 CREATE TABLE "TaskComment" (
-    "id" SERIAL PRIMARY KEY,
-    "message" TEXT,
-    "created_at" TIMESTAMPTZ,
-    "updated_at" TIMESTAMPTZ,
-    "task_id" INT,
-    "user_id" INT,
-    "author_id" INT,
-    FOREIGN KEY ("task_id") REFERENCES "Task"("id"),
-    FOREIGN KEY ("user_id") REFERENCES "Users"("id"),
-    FOREIGN KEY ("author_id") REFERENCES "Users"("id")
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  message VARCHAR,
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP,
+  task_id INT REFERENCES "Task"(id),
+  user_id INT REFERENCES "User"(id),
+  author_id INT REFERENCES "User"(id)
 );
 
 -- Create Review table
 CREATE TABLE "Review" (
-    "id" SERIAL PRIMARY KEY,
-    "feedback" TEXT,
-    "created_at" TIMESTAMPTZ,
-    "updated_at" TIMESTAMPTZ,
-    "user_id" INT,
-    FOREIGN KEY ("user_id") REFERENCES "Users"("id")
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  feedback VARCHAR,
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP,
+  user_id INT REFERENCES "User"(id)
 );
 
 -- Create OnDemandReport table
 CREATE TABLE "OnDemandReport" (
-    "id" SERIAL PRIMARY KEY,
-    "data" TEXT,
-    "created_at" TIMESTAMPTZ,
-    "recipient_id" INT,
-    FOREIGN KEY ("recipient_id") REFERENCES "Users"("id")
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  data VARCHAR,
+  created_at TIMESTAMP,
+  recipient_id INT REFERENCES "User"(id)
 );
 
 -- Create Notification table
 CREATE TABLE "Notification" (
-    "id" SERIAL PRIMARY KEY,
-    "message" TEXT,
-    "created_at" TIMESTAMPTZ,
-    "recipient_id" INT,
-    FOREIGN KEY ("recipient_id") REFERENCES "Users"("id")
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  message VARCHAR,
+  created_at TIMESTAMP,
+  recipient_id INT REFERENCES "User"(id)
 );
 
--- Create ENUM type for Promotion status
-CREATE TYPE "promotion_status_enum" AS ENUM ('Pending', 'Approved', 'Rejected');
+-- Create PromotionStatus table
+CREATE TABLE "PromotionStatus" (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name VARCHAR UNIQUE NOT NULL
+);
 
 -- Create PromotionRequest table
 CREATE TABLE "PromotionRequest" (
-    "id" SERIAL PRIMARY KEY,
-    "status" "promotion_status_enum",
-    "created_at" TIMESTAMPTZ,
-    "updated_at" TIMESTAMPTZ,
-    "user_id" INT,
-    FOREIGN KEY ("user_id") REFERENCES "Users"("id")
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  status_id INT REFERENCES "PromotionStatus"(id),
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP,
+  user_id INT REFERENCES "User"(id)
 );
 
 -- Create Team table
 CREATE TABLE "Team" (
-    "id" SERIAL PRIMARY KEY,
-    "name" VARCHAR(255),
-    "lead_id" INT,
-    FOREIGN KEY ("lead_id") REFERENCES "Users"("id")
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name VARCHAR,
+  lead_id INT REFERENCES "User"(id)
 );
 
 -- Create TeamMembership table
 CREATE TABLE "TeamMembership" (
-    "id" SERIAL PRIMARY KEY,
-    "user_id" INT,
-    "team_id" INT,
-    FOREIGN KEY ("user_id") REFERENCES "Users"("id"),
-    FOREIGN KEY ("team_id") REFERENCES "Team"("id")
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  user_id INT REFERENCES "User"(id),
+  team_id INT REFERENCES "Team"(id)
 );
 
 -- Create Position table
 CREATE TABLE "Position" (
-    "id" SERIAL PRIMARY KEY,
-    "name" VARCHAR(255)
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name VARCHAR
 );
 
 -- Create UserPosition table
 CREATE TABLE "UserPosition" (
-    "id" SERIAL PRIMARY KEY,
-    "level" INT,
-    "user_id" INT,
-    "position_id" INT,
-    FOREIGN KEY ("user_id") REFERENCES "Users"("id"),
-    FOREIGN KEY ("position_id") REFERENCES "Position"("id")
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  level INT,
+  user_id INT REFERENCES "User"(id),
+  position_id INT REFERENCES "Position"(id)
 );
 
 -- Create ReportSnapshot table
 CREATE TABLE "ReportSnapshot" (
-    "id" SERIAL PRIMARY KEY,
-    "created_at" TIMESTAMPTZ,
-    "report_data" TEXT
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  created_at TIMESTAMP,
+  report_data TEXT
 );
