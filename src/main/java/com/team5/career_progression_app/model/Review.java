@@ -1,11 +1,16 @@
 package com.team5.career_progression_app.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "review")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Review {
 
     @Id
@@ -22,22 +27,9 @@ public class Review {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Relationships
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
-    // Constructors
-
-    public Review() {}
-
-    public Review(String feedback, User user) {
-        this.feedback = feedback;
-        this.user = user;
-    }
-
-    // @PrePersist & @PreUpdate
 
     @PrePersist
     protected void onCreate() {
@@ -49,50 +41,6 @@ public class Review {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
-    // Getters and Setters
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getFeedback() {
-        return feedback;
-    }
-
-    public void setFeedback(String feedback) {
-        this.feedback = feedback;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    // toString method
 
     @Override
     public String toString() {

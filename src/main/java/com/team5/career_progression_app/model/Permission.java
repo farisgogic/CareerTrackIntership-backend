@@ -6,12 +6,12 @@ import lombok.*;
 import java.util.List;
 
 @Entity
-@Table(name = "task_template")
+@Table(name = "permission")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TaskTemplate {
+public class Permission {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,22 +21,14 @@ public class TaskTemplate {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "description")
-    private String description;
-
-    @Column(name = "task_requirements")
-    private String taskRequirements;
-
-    @OneToMany(mappedBy = "template")
-    private List<Task> tasks;
+    @OneToMany(mappedBy = "permission")
+    public List<RolePermission> rolePermissions;
 
     @Override
     public String toString() {
-        return "TaskTemplate{" +
+        return "Role{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", taskRequirements='" + taskRequirements + '\'' +
                 '}';
     }
 }

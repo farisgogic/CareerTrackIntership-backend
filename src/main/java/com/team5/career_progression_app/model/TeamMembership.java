@@ -1,16 +1,19 @@
 package com.team5.career_progression_app.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "team_membership")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class TeamMembership {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    // Relationships
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -19,41 +22,6 @@ public class TeamMembership {
     @ManyToOne
     @JoinColumn(name = "team_id")
     private Team team;
-
-    // Constructors
-
-    public TeamMembership() {}
-
-    public TeamMembership(User user, Team team) {
-        this.user = user;
-        this.team = team;
-    }
-
-    // Getters and Setters
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Team getTeam() {
-        return team;
-    }
-
-    public void setTeam(Team team) {
-        this.team = team;
-    }
 
     @Override
     public String toString() {
