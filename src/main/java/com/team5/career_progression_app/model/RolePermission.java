@@ -3,35 +3,33 @@ package com.team5.career_progression_app.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @Entity
-@Table(name = "role")
+@Table(name = "role_permission")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Role {
+public class RolePermission {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "name")
-    private String name;
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
 
-    @OneToMany(mappedBy = "role")
-    private List<User> usersWithRole;
-
-    @OneToMany(mappedBy = "role")
-    private List<RolePermission> rolePermissions;
+    @ManyToOne
+    @JoinColumn(name = "permission_id")
+    private Permission permission;
 
     @Override
     public String toString() {
-        return "Role{" +
+        return "RolePermission{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", role=" + role.getId() +
+                ", permission=" + permission.getId() +
                 '}';
     }
 }

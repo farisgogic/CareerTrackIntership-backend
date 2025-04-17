@@ -1,11 +1,16 @@
 package com.team5.career_progression_app.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "task_comment")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class TaskComment {
 
     @Id
@@ -22,8 +27,6 @@ public class TaskComment {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Relationships
-
     @ManyToOne
     @JoinColumn(name = "task_id")
     private Task task;
@@ -36,18 +39,6 @@ public class TaskComment {
     @JoinColumn(name = "author_id")
     private User author;
 
-    // Constructors
-
-    public TaskComment() {}
-
-    public TaskComment(String message, Task task, User user, User author) {
-        this.message = message;
-        this.task = task;
-        this.user = user;
-    }
-
-    // @PrePersist & @PreUpdate
-
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -58,66 +49,6 @@ public class TaskComment {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
-    // Getters and Setters
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Task getTask() {
-        return task;
-    }
-
-    public void setTask(Task task) {
-        this.task = task;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public User getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(User author) {
-        this.author = author;
-    }
-
-    // toString method
 
     @Override
     public String toString() {

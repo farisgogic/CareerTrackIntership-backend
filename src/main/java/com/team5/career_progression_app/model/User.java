@@ -1,12 +1,16 @@
 package com.team5.career_progression_app.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
@@ -23,11 +27,9 @@ public class User {
     @Column(name = "email")
     private String email;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role")
+    @ManyToOne
+    @JoinColumn(name = "role_id")
     private Role role;
-
-    // Relationships
 
     @OneToMany(mappedBy = "user")
     private List<Review> reviews;
@@ -59,151 +61,6 @@ public class User {
     @OneToMany(mappedBy = "author")
     private List<TaskComment> taskComments;
 
-    // Constructors
-
-    public User() {}
-
-    public User(String firstName, String lastName, String email, Role role) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.role = role;
-        this.reviews = new ArrayList<>();
-        this.receivedReports = new ArrayList<>();
-        this.notifications = new ArrayList<>();
-        this.promotionRequests = new ArrayList<>();
-        this.teams = new ArrayList<>();
-        this.teamMemberships = new ArrayList<>();
-        this.userPositions = new ArrayList<>();
-        this.assignedTasks = new ArrayList<>();
-        this.comments = new ArrayList<>();
-        this.taskComments = new ArrayList<>();
-    }
-
-    // Getters and Setters
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public List<Review> getReviews() {
-        return reviews;
-    }
-
-    public void setReviews(List<Review> reviews) {
-        this.reviews = reviews;
-    }
-
-    public List<OnDemandReport> getReceivedReports() {
-        return receivedReports;
-    }
-
-    public void setReceivedReports(List<OnDemandReport> receivedReports) {
-        this.receivedReports = receivedReports;
-    }
-
-    public List<Notification> getNotifications() {
-        return notifications;
-    }
-
-    public void setNotifications(List<Notification> notifications) {
-        this.notifications = notifications;
-    }
-
-    public List<PromotionRequest> getPromotionRequests() {
-        return promotionRequests;
-    }
-
-    public void setPromotionRequests(List<PromotionRequest> promotionRequests) {
-        this.promotionRequests = promotionRequests;
-    }
-
-    public List<Team> getTeams() {
-        return teams;
-    }
-
-    public void setTeams(List<Team> teams) {
-        this.teams = teams;
-    }
-
-    public List<TeamMembership> getTeamMemberships() {
-        return teamMemberships;
-    }
-
-    public void setTeamMemberships(List<TeamMembership> teamMemberships) {
-        this.teamMemberships = teamMemberships;
-    }
-
-    public List<UserPosition> getUserPositions() {
-        return userPositions;
-    }
-
-    public void setUserPositions(List<UserPosition> userPositions) {
-        this.userPositions = userPositions;
-    }
-
-    public List<Task> getAssignedTasks() {
-        return assignedTasks;
-    }
-
-    public void setAssignedTasks(List<Task> assignedTasks) {
-        this.assignedTasks = assignedTasks;
-    }
-
-    public List<TaskComment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<TaskComment> comments) {
-        this.comments = comments;
-    }
-
-    public List<TaskComment> getTaskComments() {
-        return taskComments;
-    }
-
-    public void setTaskComments(List<TaskComment> taskComments) {
-        this.taskComments = taskComments;
-    }
-
-    // toString method
-
     @Override
     public String toString() {
         return "User{" +
@@ -211,7 +68,7 @@ public class User {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
-                ", role=" + role +
+                ", role=" + role.getId() +
                 '}';
     }
 }
