@@ -1,0 +1,45 @@
+package com.team5.career_progression_app.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "notification")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class Notification {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer id;
+
+    @Column(name = "message")
+    private String message;
+
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @ManyToOne
+    @JoinColumn(name = "recipient_id")
+    private User recipient;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @Override
+    public String toString() {
+        return "Notification{" +
+                "id=" + id +
+                ", message='" + message + '\'' +
+                ", createdAt=" + createdAt +
+                ", recipientId=" + recipient.getId() +
+                '}';
+    }
+}
