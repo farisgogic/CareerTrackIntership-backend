@@ -3,7 +3,6 @@ package com.team5.career_progression_app.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
