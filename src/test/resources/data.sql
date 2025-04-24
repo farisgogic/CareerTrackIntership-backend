@@ -96,8 +96,5 @@ INSERT INTO "ReportSnapshot" (created_at, report_data) VALUES
 (NOW(), 'Snapshot data for report 2')
 ON CONFLICT DO NOTHING;
 
-INSERT INTO "Permission" (name) VALUES ('CREATE_TASK'), ('VIEW_REPORT'), ('APPROVE_PROMOTION')
-ON CONFLICT DO NOTHING;
-
 INSERT INTO "RolePermission" (role_id, permission_id) VALUES (1, 1), (2, 1), (2, 2), (3, 3)
 ON CONFLICT DO NOTHING;

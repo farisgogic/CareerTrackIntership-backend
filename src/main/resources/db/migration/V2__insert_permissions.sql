@@ -1,6 +1,3 @@
-DELETE FROM "RolePermission";
-DELETE FROM "Permission";
-
 ALTER SEQUENCE "Permission_id_seq" RESTART WITH 1;
 
 INSERT INTO "Permission" (name)
