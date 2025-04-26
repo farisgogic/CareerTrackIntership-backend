@@ -1,16 +1,13 @@
-INSERT INTO "Role" (name) VALUES ('Employee'), ('Team Lead'), ('CTO'), ('Admin')
-ON CONFLICT DO NOTHING;
-
 INSERT INTO "User" (first_name, last_name, email, role_id) VALUES
-('Faris', 'Gogić', 'farisgogic@hotmail.com', 1),
+('Faris', 'Gogić', 'farisgogic1@gmail.com', 1),
 ('Eldin', 'Popara', 'popara.eldin@gmail.com', 1),
 ('Nermin', 'Obućina', 'nermin_obucina@hotmail.com', 1),
 ('Dino', 'Alić', 'dino.alic@stu.ssst.edu.ba', 1),
 ('Deni', 'Alić', 'deni.alic@stu.ssst.edu.ba', 1),
 ('Jasmin', 'Dudić', 'jasmin.dudic@bloomteq.com', 2),
 ('Elvir', 'Vlahovljak', 'elvir.vlahovljak@bloomteq.com', 2),
-('Hani', 'Zahirović', 'hani@bloomteq.com', 3),
-('Admin', 'Admin', 'admin@bloomteq.com', 4) 
+('Hani', 'Zahirović', 'hani@bloomteq.com', 4),
+('Admin', 'Admin', 'admin@bloomteq.com', 5)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO "TaskTemplate" (name, description, task_requirements) VALUES
@@ -96,5 +93,3 @@ INSERT INTO "ReportSnapshot" (created_at, report_data) VALUES
 (NOW(), 'Snapshot data for report 2')
 ON CONFLICT DO NOTHING;
 
-INSERT INTO "RolePermission" (role_id, permission_id) VALUES (1, 1), (2, 1), (2, 2), (3, 3)
-ON CONFLICT DO NOTHING;
