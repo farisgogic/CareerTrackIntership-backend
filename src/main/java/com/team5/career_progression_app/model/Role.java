@@ -28,7 +28,6 @@ public class Role {
     @OneToMany(mappedBy = "role", fetch = FetchType.EAGER)
     private List<RolePermission> rolePermissions;
 
-    // Helper method to get permissions
     public Set<Permission> getPermissions() {
         return rolePermissions.stream()
                 .map(RolePermission::getPermission)

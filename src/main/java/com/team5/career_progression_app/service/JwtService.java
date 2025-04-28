@@ -21,7 +21,8 @@ public class JwtService {
     private String SECRET_KEY;
     
     private final RoleRepository roleRepository;
-
+    private static final long ONE_DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
+    
     public JwtService(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
     }
@@ -29,6 +30,9 @@ public class JwtService {
     public String generateToken(Payload googlePayload, String roleName) {
         Map<String, Object> claims = new HashMap<>();
         
+        Role role = roleRepository.findRoleByName(roleName)
+            .orElseThrow(() -> new RuntimeException("Role not found: " + roleName));
+            
         claims.put("sub", googlePayload.getEmail());
         claims.put("email", googlePayload.getEmail());
         claims.put("name", googlePayload.get("name"));
@@ -37,10 +41,7 @@ public class JwtService {
         claims.put("family_name", googlePayload.get("family_name"));
         claims.put("email_verified", googlePayload.getEmailVerified());
         claims.put("role", roleName);
-        
-        Role role = roleRepository.findByNameWithPermissions(roleName)
-            .orElseThrow(() -> new RuntimeException("Role not found: " + roleName));
-        
+
         List<Integer> permissionIds = role.getRolePermissions().stream()
             .map(rp -> rp.getPermission().getId())
             .collect(Collectors.toList());
@@ -63,7 +64,7 @@ public class JwtService {
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
+                .setExpiration(new Date(System.currentTimeMillis() + ONE_DAY_IN_MILLISECONDS))
                 .signWith(getSignKey())
                 .compact();
     }
