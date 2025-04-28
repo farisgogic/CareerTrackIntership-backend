@@ -2,11 +2,10 @@ package com.team5.career_progression_app.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.List;
 
 @Entity
-@Table(name = "permission")
+@Table(name = "\"Permission\"")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,15 +17,15 @@ public class Permission {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
     @OneToMany(mappedBy = "permission")
-    public List<RolePermission> rolePermissions;
+    private List<RolePermission> rolePermissions;
 
     @Override
     public String toString() {
-        return "Role{" +
+        return "Permission{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 '}';
