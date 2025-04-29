@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "task")
+@Table(name = "Task")
 @Getter
 @Setter
 @NoArgsConstructor

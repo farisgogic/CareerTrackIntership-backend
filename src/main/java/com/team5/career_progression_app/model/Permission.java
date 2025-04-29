@@ -5,7 +5,7 @@ import lombok.*;
 import java.util.List;
 
 @Entity
-@Table(name = "\"Permission\"")
+@Table(name = "Permission")
 @Getter
 @Setter
 @NoArgsConstructor

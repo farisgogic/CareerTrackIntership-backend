@@ -6,7 +6,7 @@ import lombok.*;
 import java.util.List;
 
 @Entity
-@Table(name = "task_template")
+@Table(name = "TaskTemplate")
 @Getter
 @Setter
 @NoArgsConstructor

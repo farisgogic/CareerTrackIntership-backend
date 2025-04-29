@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "\"RolePermission\"")
+@Table(name = "RolePermission")
 @Getter
 @Setter
 @NoArgsConstructor

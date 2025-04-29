@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "\"Role\"")
+@Table(name = "Role")
 @Getter
 @Setter
 @NoArgsConstructor

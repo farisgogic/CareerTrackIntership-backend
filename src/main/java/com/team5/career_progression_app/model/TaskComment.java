@@ -6,7 +6,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "task_comment")
+@Table(name = "TaskComment")
 @Getter
 @Setter
 @NoArgsConstructor

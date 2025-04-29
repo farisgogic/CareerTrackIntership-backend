@@ -48,7 +48,7 @@ class CareerProgressionAppApplicationTests {
     void testRoleTablePopulated() throws Exception {
         try (Connection conn = dataSource.getConnection();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM \"Role\"")) {
+             ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM \"role\"")) {
             
             assertTrue(rs.next(), "Result set should have at least one row");
             int count = rs.getInt(1);

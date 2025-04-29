@@ -6,7 +6,7 @@ import lombok.*;
 import java.util.List;
 
 @Entity
-@Table(name = "position")
+@Table(name = "Position")
 @Getter
 @Setter
 @NoArgsConstructor
