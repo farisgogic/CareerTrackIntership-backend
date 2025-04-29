@@ -1,6 +1,4 @@
-ALTER SEQUENCE "Role_id_seq" RESTART WITH 1;
-
-INSERT INTO "Role" (name)
+INSERT INTO Role (name)
  VALUES
      ('USER'),
      ('TEAM_LEAD'),
@@ -8,9 +6,7 @@ INSERT INTO "Role" (name)
      ('CTO'),
      ('ADMIN');
  
- ALTER SEQUENCE "RolePermission_id_seq" RESTART WITH 1;
-
- INSERT INTO RolePermission (role_id, permission_id)
+INSERT INTO RolePermission (role_id, permission_id)
 VALUES
     (1, 2),
     (2, 2), (2, 4), (2, 6),
