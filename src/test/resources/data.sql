@@ -1,39 +1,3 @@
-INSERT INTO Role (name)
-VALUES
-    ('USER'),
-    ('TEAM_LEAD'),
-    ('LEAD_OF_LEADS'),
-    ('CTO'),
-    ('ADMIN')
-ON CONFLICT DO NOTHING;
-
-INSERT INTO Permission (name)
-VALUES
-    ('MANAGE_TASK'),
-    ('INTERACT_WITH_TASK'),
-    ('MANAGE_TEMPLATE'),
-    ('VIEW_TEAM_PROFILES'),
-    ('VIEW_ALL_PROFILES'),
-    ('COMMENT_ON_PROFILE'),
-    ('REVIEW_EMPLOYEE'),
-    ('APPROVE_PROMOTION'),
-    ('MANAGE_ROLES'),
-    ('MANAGE_PERMISSIONS'),
-    ('MANAGE_USERS'),
-    ('MANAGE_TEAMS'),
-    ('MANAGE_POSITIONS'),
-    ('MANAGE_REPORTS')
-ON CONFLICT DO NOTHING;
-
-INSERT INTO RolePermission (role_id, permission_id)
-VALUES
-    (1, 2),
-    (2, 2), (2, 4), (2, 6),
-    (3, 2), (3, 4), (3, 6),
-    (4, 1), (4, 2), (4, 3), (4, 5), (4, 6), (4, 7), (4, 8), (4, 9), (4, 10), (4, 12), (4, 13), (4, 14),
-    (5, 11)
-ON CONFLICT DO NOTHING;
-
 INSERT INTO Users (first_name, last_name, email, role_id) VALUES
 ('Faris', 'Gogić', 'farisgogic1@gmail.com', 1),
 ('Eldin', 'Popara', 'popara.eldin@gmail.com', 1),
