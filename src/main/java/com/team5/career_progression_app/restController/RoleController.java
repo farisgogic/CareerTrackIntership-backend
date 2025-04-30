@@ -18,7 +18,7 @@ public class RoleController {
         this.roleService = roleService;
     }
     @GetMapping("/permissions")
-    public List<Permission> getAllPermissions() {
-        return roleService.getAllPermissions();
+    public List<String> getAllPermissions() {
+        return roleService.getAllPermissionNames();
     }
 }

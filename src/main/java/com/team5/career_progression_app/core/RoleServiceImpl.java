@@ -17,7 +17,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<Permission> getAllPermissions() {
-        return permissionRepository.findAll();
+    public List<String> getAllPermissionNames() {
+        return permissionRepository.findAllPermissionNames();
     }
 }
