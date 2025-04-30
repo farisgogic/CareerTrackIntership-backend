@@ -13,5 +13,7 @@ public interface PermissionRepository extends JpaRepository<Permission, Integer>
     SELECT name FROM Permission
 """)
     List<String> findAllPermissionNames();
+
+    List<Permission> findByNameIn(List<String> permissionNames);
 }
 

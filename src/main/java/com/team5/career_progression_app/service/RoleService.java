@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface RoleService {
     List<String> getAllPermissionNames();
+    public void insertRole(String name, List<String> permissionNames);
 }
