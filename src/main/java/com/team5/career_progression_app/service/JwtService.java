@@ -103,4 +103,13 @@ public class JwtService {
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
+
+    public boolean hasPermissionId(String token, Integer permissionId) {
+        Claims claims = extractAllClaims(token);
+        
+        @SuppressWarnings("unchecked")
+        List<Integer> permissionIds = claims.get("permission_ids", List.class);
+        
+        return permissionIds != null && permissionIds.contains(permissionId);
+    }
 }

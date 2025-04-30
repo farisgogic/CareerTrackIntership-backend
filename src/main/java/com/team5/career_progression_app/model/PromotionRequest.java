@@ -19,7 +19,7 @@ public class PromotionRequest {
     private Integer id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(name = "status_id")
     private PromotionStatus status;
 
     @Column(name = "created_at", updatable = false)
