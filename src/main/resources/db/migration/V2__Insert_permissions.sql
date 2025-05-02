@@ -1,6 +1,4 @@
-ALTER SEQUENCE "Permission_id_seq" RESTART WITH 1;
- 
- INSERT INTO "Permission" (name)
+INSERT INTO Permission (name)
  VALUES
      ('MANAGE_TASK'),
      ('INTERACT_WITH_TASK'),
