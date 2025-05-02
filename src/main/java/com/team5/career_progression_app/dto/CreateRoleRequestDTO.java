@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
-public class CreateRoleRequest {
+public class CreateRoleRequestDTO {
 
     private String roleName;
     private List<String> permissionNames;

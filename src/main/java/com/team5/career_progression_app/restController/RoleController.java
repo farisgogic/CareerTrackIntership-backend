@@ -1,8 +1,7 @@
 package com.team5.career_progression_app.restController;
 
 import com.team5.career_progression_app.core.RoleServiceImpl;
-import com.team5.career_progression_app.dto.CreateRoleRequest;
-import com.team5.career_progression_app.model.Permission;
+import com.team5.career_progression_app.dto.CreateRoleRequestDTO;
 import com.team5.career_progression_app.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +27,7 @@ public class RoleController {
     }
 
     @PostMapping("/selectedPermissions")
-    public ResponseEntity<?> getSelectedPermissions(@RequestBody CreateRoleRequest request) {
+    public ResponseEntity<?> getSelectedPermissions(@RequestBody CreateRoleRequestDTO request) {
 
         String roleName = request.getRoleName();
         List<String> permissionsNames = request.getPermissionNames();
