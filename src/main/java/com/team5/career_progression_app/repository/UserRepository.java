@@ -2,6 +2,7 @@ package com.team5.career_progression_app.repository;
 
 import com.team5.career_progression_app.model.User;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,5 +15,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM User u WHERE LOWER(u.email) = LOWER(:email)")
     Optional<User> findByEmailIgnoreCase(@Param("email") String email);
     
-    Optional<User> findByEmail(String email);
+    List<User> findByActiveFalse();
 }

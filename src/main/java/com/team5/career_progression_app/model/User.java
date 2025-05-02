@@ -61,6 +61,12 @@ public class User {
     @OneToMany(mappedBy = "author")
     private List<TaskComment> taskComments;
 
+    @Column(name = "active")
+    private boolean active;
+
+    @Transient
+    private String profilePictureUrl;
+
     @Override
     public String toString() {
         return "User{" +
