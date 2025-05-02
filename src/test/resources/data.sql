@@ -49,9 +49,9 @@ ON CONFLICT DO NOTHING;
 INSERT INTO PromotionStatus (name) VALUES ('PENDING'), ('APPROVED'), ('REJECTED')
 ON CONFLICT DO NOTHING;
 
-INSERT INTO PromotionRequest (status_id, created_at, updated_at, user_id) VALUES
-((SELECT id FROM PromotionStatus WHERE name = 'PENDING'), NOW(), NOW(), 1),
-((SELECT id FROM PromotionStatus WHERE name = 'APPROVED'), NOW(), NOW(), 2)
+INSERT INTO PromotionRequest (status, created_at, updated_at, user_id) VALUES
+('PENDING', NOW(), NOW(), 1),
+('APPROVED', NOW(), NOW(), 2)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO Team (name, lead_id) VALUES
