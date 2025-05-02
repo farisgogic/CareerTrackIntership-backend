@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
 @Table(name = "Role")
 @Getter
@@ -25,7 +23,6 @@ public class Role {
     private String name;
 
     @OneToMany(mappedBy = "role")
-    @JsonIgnore
     private List<User> usersWithRole;
 
     @OneToMany(mappedBy = "role", fetch = FetchType.EAGER)

@@ -5,8 +5,6 @@ import lombok.*;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
 @Getter
 @Setter
@@ -31,7 +29,6 @@ public class User {
 
     @ManyToOne
     @JoinColumn(name = "role_id")
-    @JsonIgnore
     private Role role;
 
     @OneToMany(mappedBy = "user")
