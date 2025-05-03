@@ -67,6 +67,12 @@ public class AuthService {
                         "message", "Your profile is not activated yet."));
             }
 
+            String newProfilePictureUrl = (String) payload.get("picture");
+            if (!newProfilePictureUrl.equals(user.getProfilePictureUrl())) {
+                user.setProfilePictureUrl(newProfilePictureUrl);
+                userRepository.save(user);
+            }
+
             String token = jwtService.generateToken(payload, user.getRole().getName());
             return ResponseEntity.ok(Map.of("token", token));
 
