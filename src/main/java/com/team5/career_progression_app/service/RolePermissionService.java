@@ -1,5 +1,7 @@
 package com.team5.career_progression_app.service;
 
+import com.team5.career_progression_app.exception.DuplicateAssignmentException;
+import com.team5.career_progression_app.exception.ResourceNotFoundException;
 import com.team5.career_progression_app.model.Permission;
 import com.team5.career_progression_app.model.Role;
 import com.team5.career_progression_app.model.RolePermission;
@@ -11,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,13 +50,9 @@ public class RolePermissionService {
     }
 
     public ResponseEntity<?> getRoleWithPermissions(Integer roleId) {
-        Optional<Role> roleOptional = roleRepository.findById(roleId);
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
 
-        if (roleOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Role role = roleOptional.get();
         List<Permission> permissions = role.getRolePermissions().stream()
                 .map(RolePermission::getPermission)
                 .collect(Collectors.toList());
@@ -70,16 +67,13 @@ public class RolePermissionService {
 
     public ResponseEntity<?> assignPermissionToRole(Integer roleId, Integer permissionId) {
         Role role = roleRepository.findById(roleId)
-                .orElseThrow(() -> new RuntimeException("Role not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
         Permission permission = permissionRepository.findById(permissionId)
-                .orElseThrow(() -> new RuntimeException("Permission not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Permission not found"));
 
         boolean exists = rolePermissionRepository.existsByRoleAndPermission(role, permission);
         if (exists) {
-            return ResponseEntity.badRequest().body(Map.of(
-                "error", "duplicate_assignment",
-                "message", "Permission already assigned to this role"
-            ));
+            throw new DuplicateAssignmentException("Permission already assigned to this role");
         }
 
         RolePermission rolePermission = new RolePermission();
@@ -91,12 +85,11 @@ public class RolePermissionService {
     }
 
     public ResponseEntity<?> removePermissionFromRole(Integer id) {
-        return rolePermissionRepository.findById(id)
-                .map(rolePermission -> {
-                    rolePermissionRepository.delete(rolePermission);
-                    return ResponseEntity.ok().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+        RolePermission rolePermission = rolePermissionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("RolePermission not found"));
+
+        rolePermissionRepository.delete(rolePermission);
+        return ResponseEntity.ok().build();
     }
 
     // Conversion Methods (Private)
