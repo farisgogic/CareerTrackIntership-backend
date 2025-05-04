@@ -11,6 +11,7 @@ public class UserDTO {
     private String lastName;
     private String email;
     private String roleName;
+    private boolean active;
 
     public UserDTO(User user) {
         this.id = user.getId();
@@ -18,6 +19,7 @@ public class UserDTO {
         this.lastName = user.getLastName();
         this.email = user.getEmail();
         this.roleName = user.getRole() != null ? user.getRole().getName() : null;
+        this.active = user.isActive();
     }
 
 }
