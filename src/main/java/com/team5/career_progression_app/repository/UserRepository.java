@@ -19,4 +19,14 @@ public interface UserRepository extends JpaRepository<User, Integer>,
     
     List<User> findByActiveFalse();
     List<User> findByActiveTrue();
+
+    @Query(
+        value = """
+        SELECT * FROM users u
+        WHERE (:active IS NULL OR u.active = :active)
+        AND (:name IS NULL OR LOWER(u.first_name) LIKE LOWER(CONCAT('%', :name, '%')))
+        """,
+        nativeQuery = true
+    )
+    List<User> filterUsers(Boolean active,String name);
 }

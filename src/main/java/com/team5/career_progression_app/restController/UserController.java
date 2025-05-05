@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -29,14 +30,14 @@ public class UserController {
     }
 
     @PostMapping("/activate/{id}")
-    public ResponseEntity<?> activateUser(
+    public Map<String, Object> activateUser(
             @PathVariable Integer id,
             @RequestHeader("Authorization") String token) {
         return userService.changeUserActivation(id, stripBearerToken(token), true);
     }
 
     @PostMapping("/deactivate/{id}")
-    public ResponseEntity<?> deactivateUser(
+    public Map<String, Object> deactivateUser(
             @PathVariable Integer id,
             @RequestHeader("Authorization") String token) {
         return userService.changeUserActivation(id, stripBearerToken(token), false);

@@ -7,7 +7,6 @@ import com.team5.career_progression_app.model.Role;
 import com.team5.career_progression_app.model.User;
 import com.team5.career_progression_app.repository.RoleRepository;
 import com.team5.career_progression_app.repository.UserRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +31,7 @@ public class AuthService {
         this.roleRepository = roleRepository;
     }
 
-    public ResponseEntity<?> authenticateWithGoogle(String idToken) {
+    public Map<String, String> authenticateWithGoogle(String idToken) {
         GoogleIdToken.Payload payload = googleService.verify(idToken);
         String email = payload.getEmail().trim().toLowerCase();
 
@@ -72,6 +71,6 @@ public class AuthService {
         }
 
         String token = jwtService.generateToken(payload, user.getRole().getName());
-        return ResponseEntity.ok(Map.of("token", token));
+        return Map.of("token", token);
     }
 }

@@ -8,7 +8,6 @@ import com.team5.career_progression_app.model.RolePermission;
 import com.team5.career_progression_app.repository.PermissionRepository;
 import com.team5.career_progression_app.repository.RolePermissionRepository;
 import com.team5.career_progression_app.repository.RoleRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -49,7 +48,7 @@ public class RolePermissionService {
         );
     }
 
-    public ResponseEntity<?> getRoleWithPermissions(Integer roleId) {
+    public Map<String, Object> getRoleWithPermissions(Integer roleId) {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
 
@@ -57,15 +56,15 @@ public class RolePermissionService {
                 .map(RolePermission::getPermission)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(Map.of(
+        return Map.of(
             "role", convertRole(role),
             "permissions", permissions.stream()
                 .map(this::convertPermission)
                 .collect(Collectors.toList())
-        ));
+        );
     }
 
-    public ResponseEntity<?> assignPermissionToRole(Integer roleId, Integer permissionId) {
+    public Map<String, Object> assignPermissionToRole(Integer roleId, Integer permissionId) {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
         Permission permission = permissionRepository.findById(permissionId)
@@ -81,15 +80,14 @@ public class RolePermissionService {
         rolePermission.setPermission(permission);
         rolePermissionRepository.save(rolePermission);
 
-        return ResponseEntity.ok(convertRolePermission(rolePermission));
+        return convertRolePermission(rolePermission);
     }
 
-    public ResponseEntity<?> removePermissionFromRole(Integer id) {
+    public void removePermissionFromRole(Integer id) {
         RolePermission rolePermission = rolePermissionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("RolePermission not found"));
 
         rolePermissionRepository.delete(rolePermission);
-        return ResponseEntity.ok().build();
     }
 
     // Conversion Methods (Private)

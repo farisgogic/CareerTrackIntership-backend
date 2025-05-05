@@ -22,19 +22,20 @@ public class RolePermissionController {
     }
 
     @GetMapping("/roles/{roleId}")
-    public ResponseEntity<?> getRoleWithPermissions(@PathVariable Integer roleId) {
+    public Map<String, Object>getRoleWithPermissions(@PathVariable Integer roleId) {
         return rolePermissionService.getRoleWithPermissions(roleId);
     }
 
     @PostMapping
-    public ResponseEntity<?> assignPermissionToRole(
+    public Map<String, Object> assignPermissionToRole(
             @RequestParam Integer roleId,
             @RequestParam Integer permissionId) {
         return rolePermissionService.assignPermissionToRole(roleId, permissionId);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> removePermissionFromRole(@PathVariable Integer id) {
-        return rolePermissionService.removePermissionFromRole(id);
+    public void removePermissionFromRole(@PathVariable Integer id) {
+        rolePermissionService.removePermissionFromRole(id);
     }
+
 }

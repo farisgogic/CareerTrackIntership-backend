@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -27,14 +28,14 @@ public class RoleController {
     }
 
     @PostMapping("/selectedPermissions")
-    public ResponseEntity<?> getSelectedPermissions(@RequestBody CreateRoleRequestDTO request) {
+    public Map<String, String> getSelectedPermissions(@RequestBody CreateRoleRequestDTO request) {
 
         String roleName = request.getRoleName();
         List<String> permissionsNames = request.getPermissionNames();
 
         roleService.insertRole(roleName, permissionsNames);
 
-        return ResponseEntity.ok("Received permissions: ");
+        return Map.of("message", "Received permissions for role: " + roleName);
     }
 
 }

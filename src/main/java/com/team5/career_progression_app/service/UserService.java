@@ -8,9 +8,6 @@ import com.team5.career_progression_app.model.Permission;
 import com.team5.career_progression_app.model.User;
 import com.team5.career_progression_app.repository.PermissionRepository;
 import com.team5.career_progression_app.repository.UserRepository;
-import com.team5.career_progression_app.specification.UserSpecification;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,7 +21,7 @@ public class UserService {
     private final JwtService jwtService;
 
     public UserService(UserRepository userRepository, JwtService jwtService,
-                       PermissionRepository permissionRepository) {
+            PermissionRepository permissionRepository) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.permissionRepository = permissionRepository;
@@ -69,18 +66,19 @@ public class UserService {
         return "User " + user.getEmail() + " has been successfully " + (activate ? "activated" : "deactivated");
     }
 
-    public ResponseEntity<?> changeUserActivation(Integer userId, String token, boolean activate) {
+    public Map<String, Object> changeUserActivation(Integer userId, String token, boolean activate) {
         String message = toggleUserActivation(userId, activate, token);
         User user = userRepository.findById(userId).orElseThrow();
-        return ResponseEntity.ok().body(Map.of(
+        return Map.of(
                 "success", true,
                 "message", message,
-                "user", new UserDTO(user)
-        ));
+                "user", new UserDTO(user));
     }
 
     public List<UserDTO> getUsersWithFilters(Boolean active, String name) {
-        Specification<User> spec = UserSpecification.withFilters(active, name);
-        return userRepository.findAll(spec).stream().map(UserDTO::new).toList();
+        List<User> filteredUsers = userRepository.filterUsers(active, name);
+        return filteredUsers.stream()
+                .map(UserDTO::new)
+                .toList();
     }
 }
