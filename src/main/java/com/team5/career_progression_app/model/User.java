@@ -64,9 +64,13 @@ public class User {
     @Column(name = "active")
     private boolean active;
 
-    @Transient
+    @Column(name = "profile_picture_url")
     private String profilePictureUrl;
 
+    public String getProfilePictureUrl() {
+        return profilePictureUrl;
+    }
+    
     @Override
     public String toString() {
         return "User{" +
