@@ -23,13 +23,35 @@ public class UserController {
         return ResponseEntity.ok(userService.getInactiveUsers());
     }
 
+    @GetMapping("/active")
+    public ResponseEntity<List<UserDTO>> getActiveUsers() {
+        return ResponseEntity.ok(userService.getActiveUsers());
+    }
+
     @PostMapping("/activate/{id}")
     public ResponseEntity<?> activateUser(
             @PathVariable Integer id,
             @RequestHeader("Authorization") String token) {
+        return userService.changeUserActivation(id, stripBearerToken(token), true);
+    }
 
-        String rawToken = token.replace("Bearer ", "");
-        return userService.activateUserWithResponse(id, rawToken);
+    @PostMapping("/deactivate/{id}")
+    public ResponseEntity<?> deactivateUser(
+            @PathVariable Integer id,
+            @RequestHeader("Authorization") String token) {
+        return userService.changeUserActivation(id, stripBearerToken(token), false);
+    }
+
+    private String stripBearerToken(String token) {
+        return token.startsWith("Bearer ") ? token.substring(7) : token;
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<UserDTO>> getUsersWithFilters(
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(required = false) String name) {
+        
+        return ResponseEntity.ok(userService.getUsersWithFilters(active, name));
     }
 
 }

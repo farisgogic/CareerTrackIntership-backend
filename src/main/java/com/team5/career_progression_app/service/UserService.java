@@ -5,9 +5,11 @@ import com.team5.career_progression_app.model.Permission;
 import com.team5.career_progression_app.model.User;
 import com.team5.career_progression_app.repository.PermissionRepository;
 import com.team5.career_progression_app.repository.UserRepository;
+import com.team5.career_progression_app.specification.UserSpecification;
 
 import jakarta.persistence.EntityNotFoundException;
 
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +25,7 @@ public class UserService {
     private final JwtService jwtService;
 
     public UserService(UserRepository userRepository, JwtService jwtService,
-            PermissionRepository permissionRepository) {
+                       PermissionRepository permissionRepository) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.permissionRepository = permissionRepository;
@@ -35,7 +37,13 @@ public class UserService {
                 .toList();
     }
 
-    public String activateUser(Integer userId, String token) throws AccessDeniedException {
+    public List<UserDTO> getActiveUsers() {
+        return userRepository.findByActiveTrue().stream()
+                .map(UserDTO::new)
+                .toList();
+    }
+
+    private void checkManageUsersPermission(String token) throws AccessDeniedException {
         Permission manageUsersPermission = permissionRepository.findByNameIgnoreCase("MANAGE_USERS")
                 .orElseThrow(() -> new IllegalStateException("Permission 'MANAGE_USERS' not found"));
 
@@ -44,35 +52,44 @@ public class UserService {
         if (!userPermissionIds.contains(manageUsersPermission.getId())) {
             throw new AccessDeniedException("Access Denied - Permission 'MANAGE_USERS' is required");
         }
+    }
+
+    private String toggleUserActivation(Integer userId, boolean activate, String token) throws AccessDeniedException {
+        checkManageUsersPermission(token);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        if (user.isActive()) {
-            throw new IllegalStateException("User is already active");
+        if (user.isActive() == activate) {
+            throw new IllegalStateException("User is already " + (activate ? "active" : "inactive"));
         }
 
-        user.setActive(true);
+        user.setActive(activate);
         userRepository.save(user);
-        return "User " + user.getEmail() + " has been successfully activated";
+
+        return "User " + user.getEmail() + " has been successfully " + (activate ? "activated" : "deactivated");
     }
 
-    public ResponseEntity<?> activateUserWithResponse(Integer userId, String token) {
+    public ResponseEntity<?> changeUserActivation(Integer userId, String token, boolean activate) {
         try {
-            String message = activateUser(userId, token);
+            String message = toggleUserActivation(userId, activate, token);
+            User user = userRepository.findById(userId).orElseThrow(); 
             return ResponseEntity.ok().body(Map.of(
                     "success", true,
-                    "message", message));
-        } catch (Exception e) {
+                    "message", message,
+                    "user", new UserDTO(user)
+            ));
+        } catch (AccessDeniedException | EntityNotFoundException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(Map.of(
                     "success", false,
-                    "error", e.getMessage()));
+                    "error", e.getMessage()
+            ));
         }
     }
 
-    public String getProfilePictureFromToken(String token) {
-        if (token == null)
-            return null;
-        return jwtService.extractClaim(token, claims -> claims.get("picture", String.class));
+    public List<UserDTO> getUsersWithFilters(Boolean active, String name) {
+        Specification<User> spec = UserSpecification.withFilters(active, name);
+        return userRepository.findAll(spec).stream().map(UserDTO::new).toList();
     }
+    
 }
