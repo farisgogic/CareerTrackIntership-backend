@@ -1,6 +1,7 @@
 package com.team5.career_progression_app.service;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.team5.career_progression_app.dto.ApiResponse;
 import com.team5.career_progression_app.exception.AuthenticationException;
 import com.team5.career_progression_app.exception.ResourceNotFoundException;
 import com.team5.career_progression_app.model.Role;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -31,7 +31,7 @@ public class AuthService {
         this.roleRepository = roleRepository;
     }
 
-    public Map<String, String> authenticateWithGoogle(String idToken) {
+    public ApiResponse<String> authenticateWithGoogle(String idToken) {
         GoogleIdToken.Payload payload = googleService.verify(idToken);
         String email = payload.getEmail().trim().toLowerCase();
     
@@ -71,6 +71,6 @@ public class AuthService {
         }
     
         String token = jwtService.generateToken(payload, user.getRole().getName());
-        return Map.of("token", token);
-    }    
+        return new ApiResponse<String>(true, "token: ", token);
+    }
 }

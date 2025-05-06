@@ -1,5 +1,6 @@
 package com.team5.career_progression_app.restController;
 
+import com.team5.career_progression_app.dto.ApiResponse;
 import com.team5.career_progression_app.exception.InvalidRequestException;
 import com.team5.career_progression_app.service.AuthService;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class AuthController {
     }
 
     @PostMapping("/google")
-    public Map<String, String> loginWithGoogle(@RequestBody Map<String, String> request) {
+    public ApiResponse<String> loginWithGoogle(@RequestBody Map<String, String> request) {
         String idToken = request.get("idToken");
 
         if (idToken == null || idToken.isBlank()) {
@@ -30,9 +31,9 @@ public class AuthController {
         return authService.authenticateWithGoogle(idToken);
     }
 
-
     @PostMapping("/logout")
-    public Map<String,String> logout() {
-        return Map.of("message", "Logout successful");
+    public ApiResponse<String> logout() {
+        return new ApiResponse<>(true, "Logout successful", null);
     }
+
 }

@@ -1,10 +1,11 @@
 package com.team5.career_progression_app.restController;
 
+import com.team5.career_progression_app.dto.AllRolesPermissionsDTO;
+import com.team5.career_progression_app.dto.ApiResponse;
+import com.team5.career_progression_app.dto.RolePermissionDTO;
+import com.team5.career_progression_app.dto.RoleWithPermissionsDTO;
 import com.team5.career_progression_app.service.RolePermissionService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/role-permissions")
@@ -17,25 +18,24 @@ public class RolePermissionController {
     }
 
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getAllRolesAndPermissions() {
-        return ResponseEntity.ok(rolePermissionService.getAllRolesAndPermissions());
+    public ApiResponse<AllRolesPermissionsDTO> getAllRolesAndPermissions() {
+        return rolePermissionService.getAllRolesAndPermissions();
     }
 
     @GetMapping("/roles/{roleId}")
-    public Map<String, Object>getRoleWithPermissions(@PathVariable Integer roleId) {
+    public ApiResponse<RoleWithPermissionsDTO> getRoleWithPermissions(@PathVariable Integer roleId) {
         return rolePermissionService.getRoleWithPermissions(roleId);
     }
 
     @PostMapping
-    public Map<String, Object> assignPermissionToRole(
+    public ApiResponse<RolePermissionDTO> assignPermissionToRole(
             @RequestParam Integer roleId,
             @RequestParam Integer permissionId) {
         return rolePermissionService.assignPermissionToRole(roleId, permissionId);
     }
 
     @DeleteMapping("/{id}")
-    public void removePermissionFromRole(@PathVariable Integer id) {
-        rolePermissionService.removePermissionFromRole(id);
+    public ApiResponse<Void> removePermissionFromRole(@PathVariable Integer id) {
+        return rolePermissionService.removePermissionFromRole(id);
     }
-
 }

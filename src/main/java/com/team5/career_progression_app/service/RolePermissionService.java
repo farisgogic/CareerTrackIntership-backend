@@ -1,5 +1,11 @@
 package com.team5.career_progression_app.service;
 
+import com.team5.career_progression_app.dto.AllRolesPermissionsDTO;
+import com.team5.career_progression_app.dto.ApiResponse;
+import com.team5.career_progression_app.dto.PermissionDTO;
+import com.team5.career_progression_app.dto.RoleDTO;
+import com.team5.career_progression_app.dto.RolePermissionDTO;
+import com.team5.career_progression_app.dto.RoleWithPermissionsDTO;
 import com.team5.career_progression_app.exception.DuplicateAssignmentException;
 import com.team5.career_progression_app.exception.ResourceNotFoundException;
 import com.team5.career_progression_app.model.Permission;
@@ -11,7 +17,6 @@ import com.team5.career_progression_app.repository.RoleRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,25 +35,34 @@ public class RolePermissionService {
         this.rolePermissionRepository = rolePermissionRepository;
     }
 
-    public Map<String, Object> getAllRolesAndPermissions() {
+    public ApiResponse<AllRolesPermissionsDTO> getAllRolesAndPermissions() {
         List<Role> roles = roleRepository.findAll();
         List<Permission> permissions = permissionRepository.findAll();
         List<RolePermission> rolePermissions = rolePermissionRepository.findAll();
 
-        return Map.of(
-            "roles", roles.stream()
-                .map(this::convertRole)
-                .collect(Collectors.toList()),
-            "permissions", permissions.stream()
-                .map(this::convertPermission)
-                .collect(Collectors.toList()),
-            "rolePermissions", rolePermissions.stream()
-                .map(this::convertRolePermission)
-                .collect(Collectors.toList())
-        );
+        List<RoleDTO> roleDTOs = roles.stream()
+                .map(role -> new RoleDTO(role.getId(), role.getName()))
+                .collect(Collectors.toList());
+
+        List<PermissionDTO> permissionDTOs = permissions.stream()
+                .map(permission -> new PermissionDTO(permission.getId(), permission.getName()))
+                .collect(Collectors.toList());
+
+        List<RolePermissionDTO> rolePermissionDTOs = rolePermissions.stream()
+                .map(rolePermission -> new RolePermissionDTO(
+                        rolePermission.getId(),
+                        new RoleDTO(rolePermission.getRole().getId(), rolePermission.getRole().getName()),
+                        new PermissionDTO(rolePermission.getPermission().getId(),
+                                rolePermission.getPermission().getName())))
+                .collect(Collectors.toList());
+
+        AllRolesPermissionsDTO allRolesPermissionsDTO = new AllRolesPermissionsDTO(roleDTOs, permissionDTOs,
+                rolePermissionDTOs);
+
+        return new ApiResponse<>(true, "Fetched all roles and permissions", allRolesPermissionsDTO);
     }
 
-    public Map<String, Object> getRoleWithPermissions(Integer roleId) {
+    public ApiResponse<RoleWithPermissionsDTO> getRoleWithPermissions(Integer roleId) {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
 
@@ -56,15 +70,16 @@ public class RolePermissionService {
                 .map(RolePermission::getPermission)
                 .collect(Collectors.toList());
 
-        return Map.of(
-            "role", convertRole(role),
-            "permissions", permissions.stream()
-                .map(this::convertPermission)
-                .collect(Collectors.toList())
-        );
+        RoleWithPermissionsDTO roleWithPermissionsDTO = new RoleWithPermissionsDTO(
+                new RoleDTO(role.getId(), role.getName()),
+                permissions.stream()
+                        .map(permission -> new PermissionDTO(permission.getId(), permission.getName()))
+                        .collect(Collectors.toList()));
+
+        return new ApiResponse<>(true, "Fetched role with permissions", roleWithPermissionsDTO);
     }
 
-    public Map<String, Object> assignPermissionToRole(Integer roleId, Integer permissionId) {
+    public ApiResponse<RolePermissionDTO> assignPermissionToRole(Integer roleId, Integer permissionId) {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
         Permission permission = permissionRepository.findById(permissionId)
@@ -80,36 +95,20 @@ public class RolePermissionService {
         rolePermission.setPermission(permission);
         rolePermissionRepository.save(rolePermission);
 
-        return convertRolePermission(rolePermission);
+        RolePermissionDTO rolePermissionDTO = new RolePermissionDTO(
+                rolePermission.getId(),
+                new RoleDTO(rolePermission.getRole().getId(), rolePermission.getRole().getName()),
+                new PermissionDTO(rolePermission.getPermission().getId(), rolePermission.getPermission().getName()));
+
+        return new ApiResponse<>(true, "Permission assigned to role", rolePermissionDTO);
     }
 
-    public void removePermissionFromRole(Integer id) {
+    public ApiResponse<Void> removePermissionFromRole(Integer id) {
         RolePermission rolePermission = rolePermissionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("RolePermission not found"));
 
         rolePermissionRepository.delete(rolePermission);
-    }
 
-    // Conversion Methods (Private)
-    private Map<String, Object> convertRole(Role role) {
-        return Map.of(
-            "id", role.getId(),
-            "name", role.getName()
-        );
-    }
-
-    private Map<String, Object> convertPermission(Permission permission) {
-        return Map.of(
-            "id", permission.getId(),
-            "name", permission.getName()
-        );
-    }
-
-    private Map<String, Object> convertRolePermission(RolePermission rolePermission) {
-        return Map.of(
-            "id", rolePermission.getId(),
-            "role", convertRole(rolePermission.getRole()),
-            "permission", convertPermission(rolePermission.getPermission())
-        );
+        return new ApiResponse<>(true, "Permission removed from role", null);
     }
 }

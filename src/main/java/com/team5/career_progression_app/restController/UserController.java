@@ -1,5 +1,6 @@
 package com.team5.career_progression_app.restController;
 
+import com.team5.career_progression_app.dto.ApiResponse;
 import com.team5.career_progression_app.dto.UserDTO;
 import com.team5.career_progression_app.service.UserService;
 
@@ -7,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -30,14 +30,14 @@ public class UserController {
     }
 
     @PostMapping("/activate/{id}")
-    public Map<String, Object> activateUser(
+    public ApiResponse<UserDTO> activateUser(
             @PathVariable Integer id,
             @RequestHeader("Authorization") String token) {
         return userService.changeUserActivation(id, stripBearerToken(token), true);
     }
 
     @PostMapping("/deactivate/{id}")
-    public Map<String, Object> deactivateUser(
+    public ApiResponse<UserDTO> deactivateUser(
             @PathVariable Integer id,
             @RequestHeader("Authorization") String token) {
         return userService.changeUserActivation(id, stripBearerToken(token), false);
