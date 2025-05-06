@@ -1,6 +1,7 @@
 package com.team5.career_progression_app.service;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
+import com.team5.career_progression_app.exception.ResourceNotFoundException;
 import com.team5.career_progression_app.model.Role;
 import com.team5.career_progression_app.repository.RoleRepository;
 import io.jsonwebtoken.Claims;
@@ -31,7 +32,7 @@ public class JwtService {
         Map<String, Object> claims = new HashMap<>();
         
         Role role = roleRepository.findRoleByName(roleName)
-            .orElseThrow(() -> new RuntimeException("Role not found: " + roleName));
+            .orElseThrow(() -> new ResourceNotFoundException("Role " + roleName + " not found"));
             
         claims.put("sub", googlePayload.getEmail());
         claims.put("email", googlePayload.getEmail());

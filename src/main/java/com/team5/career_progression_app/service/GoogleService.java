@@ -4,6 +4,8 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import com.team5.career_progression_app.exception.TokenVerificationException;
+import com.team5.career_progression_app.exception.TokenRevocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,24 +38,24 @@ public class GoogleService {
 
             GoogleIdToken idToken = verifier.verify(idTokenString);
             if (idToken == null) {
-                throw new IllegalArgumentException("Invalid ID token");
+                throw new TokenVerificationException("Invalid ID token");
             }
 
             GoogleIdToken.Payload payload = idToken.getPayload();
-            
+
             if (!payload.getAudience().equals(clientId)) {
-                throw new IllegalArgumentException("Audience mismatch");
+                throw new TokenVerificationException("Audience mismatch");
             }
 
             long expirationTimeMillis = payload.getExpirationTimeSeconds() * 1000L;
             if (new Date().after(new Date(expirationTimeMillis))) {
-                throw new IllegalArgumentException("Token expired");
+                throw new TokenVerificationException("Token expired");
             }
 
             return payload;
         } catch (Exception e) {
             logger.error("Google token verification failed", e);
-            throw new RuntimeException("Token verification failed", e);
+            throw new TokenVerificationException("Token verification failed", e);
         }
     }
 
@@ -61,26 +63,25 @@ public class GoogleService {
         try {
             String revokeUrl = "https://oauth2.googleapis.com/revoke?token=" + token;
             RestTemplate restTemplate = new RestTemplate();
-    
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-    
+
             HttpEntity<String> entity = new HttpEntity<>(headers);
-    
+
             ResponseEntity<String> response = restTemplate.exchange(
                 revokeUrl,
                 HttpMethod.POST,
                 entity,
                 String.class
             );
-    
+
             if (!response.getStatusCode().is2xxSuccessful()) {
-                throw new RuntimeException("Failed to revoke token: " + response.getBody());
+                throw new TokenRevocationException("Failed to revoke token: " + response.getBody());
             }
         } catch (Exception e) {
             logger.error("Error during token revocation: " + e.getMessage(), e);
-            throw new RuntimeException("Token revocation failed", e);
+            throw new TokenRevocationException("Token revocation failed", e);
         }
     }
-
 }

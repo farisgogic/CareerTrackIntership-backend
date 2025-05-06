@@ -1,5 +1,6 @@
 package com.team5.career_progression_app.restController;
 
+import com.team5.career_progression_app.dto.ApiResponse;
 import com.team5.career_progression_app.dto.UserDTO;
 import com.team5.career_progression_app.service.UserService;
 
@@ -29,14 +30,14 @@ public class UserController {
     }
 
     @PostMapping("/activate/{id}")
-    public ResponseEntity<?> activateUser(
+    public ApiResponse<UserDTO> activateUser(
             @PathVariable Integer id,
             @RequestHeader("Authorization") String token) {
         return userService.changeUserActivation(id, stripBearerToken(token), true);
     }
 
     @PostMapping("/deactivate/{id}")
-    public ResponseEntity<?> deactivateUser(
+    public ApiResponse<UserDTO> deactivateUser(
             @PathVariable Integer id,
             @RequestHeader("Authorization") String token) {
         return userService.changeUserActivation(id, stripBearerToken(token), false);
