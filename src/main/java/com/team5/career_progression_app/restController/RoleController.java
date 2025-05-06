@@ -4,7 +4,6 @@ import com.team5.career_progression_app.core.RoleServiceImpl;
 import com.team5.career_progression_app.dto.CreateRoleRequestDTO;
 import com.team5.career_progression_app.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

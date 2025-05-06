@@ -34,11 +34,11 @@ public class AuthService {
     public Map<String, String> authenticateWithGoogle(String idToken) {
         GoogleIdToken.Payload payload = googleService.verify(idToken);
         String email = payload.getEmail().trim().toLowerCase();
-
+    
         logger.info("Attempting login for email: {}", email);
-
+    
         Optional<User> userOptional = userRepository.findByEmailIgnoreCase(email);
-
+    
         if (userOptional.isEmpty()) {
             User newUser = new User();
             newUser.setEmail(email);
@@ -46,31 +46,31 @@ public class AuthService {
             newUser.setFirstName((String) payload.get("given_name"));
             newUser.setLastName((String) payload.get("family_name"));
             newUser.setProfilePictureUrl((String) payload.get("picture"));
-
+    
             Role defaultRole = roleRepository.findRoleByName("USER")
                     .orElseThrow(() -> new ResourceNotFoundException("Default role not found"));
             newUser.setRole(defaultRole);
-
+    
             userRepository.save(newUser);
-
+    
             logger.info("New user registered and pending activation: {}", email);
             throw new AuthenticationException("Profile created. Waiting for admin approval.");
         }
-
+    
         User user = userOptional.get();
-
+    
         if (!user.isActive()) {
             logger.warn("Inactive user attempted login: {}", email);
             throw new AuthenticationException("Your profile is not activated yet.");
         }
-
+    
         String newProfilePictureUrl = (String) payload.get("picture");
         if (!newProfilePictureUrl.equals(user.getProfilePictureUrl())) {
             user.setProfilePictureUrl(newProfilePictureUrl);
             userRepository.save(user);
         }
-
+    
         String token = jwtService.generateToken(payload, user.getRole().getName());
         return Map.of("token", token);
-    }
+    }    
 }
