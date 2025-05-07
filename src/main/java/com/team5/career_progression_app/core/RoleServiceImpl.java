@@ -32,7 +32,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Transactional
     @Override
-    public void insertRole(String roleName, List<String> permissionNames) {
+    public Role insertRole(String roleName, List<String> permissionNames) {
 
         Role role = new Role();
         role.setName(roleName);
@@ -46,5 +46,6 @@ public class RoleServiceImpl implements RoleService {
             rp.setPermission(permission);
             rolePermissionRepository.save(rp);
         }
+        return role;
     }
 }
