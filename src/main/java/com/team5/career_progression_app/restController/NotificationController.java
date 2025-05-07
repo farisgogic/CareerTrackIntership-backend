@@ -3,6 +3,7 @@ package com.team5.career_progression_app.restController;
 import com.team5.career_progression_app.dto.ApiResponse;
 import com.team5.career_progression_app.dto.FilterCountDTO;
 import com.team5.career_progression_app.dto.NotificationDTO;
+import com.team5.career_progression_app.dto.PaginatedResponse;
 import com.team5.career_progression_app.service.NotificationService;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,12 +20,14 @@ public class NotificationController {
     }
 
     @GetMapping("/{userId}")
-    public ApiResponse<List<NotificationDTO>> getNotifications(
+    public ApiResponse<PaginatedResponse<NotificationDTO>> getNotifications(
             @PathVariable Integer userId,
-            @RequestParam(required = false) String filter) {
+            @RequestParam(required = false) String filter,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
 
-        List<NotificationDTO> notifications = notificationService.getAllForUser(userId, filter);
-        return new ApiResponse<>(true, "Notifications fetched successfully", notifications);
+        PaginatedResponse<NotificationDTO> response = notificationService.getAllForUser(userId, filter, page, size);
+        return new ApiResponse<>(true, "Notifications fetched successfully", response);
     }
 
     @GetMapping("/{userId}/filters")

@@ -2,6 +2,7 @@ package com.team5.career_progression_app.service;
 
 import com.team5.career_progression_app.dto.FilterCountDTO;
 import com.team5.career_progression_app.dto.NotificationDTO;
+import com.team5.career_progression_app.dto.PaginatedResponse;
 import com.team5.career_progression_app.model.Notification;
 import com.team5.career_progression_app.repository.NotificationRepository;
 import org.springframework.stereotype.Service;
@@ -18,12 +19,12 @@ public class NotificationService {
         this.notificationRepository = notificationRepository;
     }
 
-    public List<NotificationDTO> getAllForUser(Integer userId, String filter) {
+    public PaginatedResponse<NotificationDTO> getAllForUser(Integer userId, String filter, int page, int size) {
         List<Notification> notifications;
-
-        if (filter == null || filter.equals("All")) {
+        
+        if (filter == null || filter.equalsIgnoreCase("All")) {
             notifications = notificationRepository.findByRecipientIdOrderByCreatedAtDesc(userId);
-        } else if (filter.equals("Unread")) {
+        } else if (filter.equalsIgnoreCase("Unread")) {
             notifications = notificationRepository.findByRecipientIdAndReadFalseOrderByCreatedAtDesc(userId);
         } else {
             notifications = notificationRepository.findByRecipientIdAndMessageContainingIgnoreCaseOrderByCreatedAtDesc(
@@ -31,7 +32,7 @@ public class NotificationService {
                 getSearchTermForFilter(filter)
             );
         }
-
+    
         notifications.sort((n1, n2) -> {
             if (!n1.isRead() && n2.isRead()) {
                 return -1;
@@ -41,10 +42,17 @@ public class NotificationService {
             }
             return n2.getCreatedAt().compareTo(n1.getCreatedAt());
         });
-
-        return notifications.stream()
+    
+        int totalCount = notifications.size();
+        int startIndex = page * size;
+        int endIndex = Math.min(startIndex + size, totalCount);
+        
+        List<NotificationDTO> paginatedData = notifications.subList(startIndex, endIndex)
+                .stream()
                 .map(NotificationDTO::new)
                 .collect(Collectors.toList());
+    
+        return new PaginatedResponse<>(paginatedData, totalCount);
     }
 
     private String getSearchTermForFilter(String filter) {
