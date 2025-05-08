@@ -4,6 +4,7 @@ import com.team5.career_progression_app.dto.FilterCountDTO;
 import com.team5.career_progression_app.dto.NotificationDTO;
 import com.team5.career_progression_app.dto.PaginatedResponse;
 import com.team5.career_progression_app.model.Notification;
+import com.team5.career_progression_app.model.User;
 import com.team5.career_progression_app.repository.NotificationRepository;
 import org.springframework.stereotype.Service;
 
@@ -105,5 +106,37 @@ public class NotificationService {
         List<Notification> notifications = notificationRepository.findByRecipientIdOrderByCreatedAtDesc(userId);
         notifications.forEach(n -> n.setRead(true));
         notificationRepository.saveAll(notifications);
+    }
+
+    public void notifyTaskReceived(User recipient, String taskDetails) {
+        String message = "Task Received: " + taskDetails;
+        createNotification(recipient, message);
+    }
+
+    public void notifyTaskFinished(User lead, String taskDetails) {
+        String message = "Task Finished: " + taskDetails;
+        createNotification(lead, message);
+    }
+
+    public void notifyFeedbackReceived(User recipient, String feedbackDetails) {
+        String message = "Feedback Received: " + feedbackDetails;
+        createNotification(recipient, message);
+    }
+
+    public void notifyTaskChanged(User recipient, String taskDetails) {
+        String message = "Task Changed: " + taskDetails;
+        createNotification(recipient, message);
+    }
+
+    public void notifyPromotionReceived(User recipient, String promotionDetails) {
+        String message = "Promotion Received: " + promotionDetails;
+        createNotification(recipient, message);
+    }
+
+    private void createNotification(User recipient, String message) {
+        Notification notification = new Notification();
+        notification.setMessage(message);
+        notification.setRecipient(recipient);
+        notificationRepository.save(notification);
     }
 }
