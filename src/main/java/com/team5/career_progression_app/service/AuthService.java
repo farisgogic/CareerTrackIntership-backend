@@ -70,7 +70,7 @@ public class AuthService {
             userRepository.save(user);
         }
     
-        String token = jwtService.generateToken(payload, user.getRole().getName());
+        String token = jwtService.generateToken(payload, user.getRole().getName(), user.getId());
         return new ApiResponse<String>(true, "token: ", token);
     }
 }

@@ -28,6 +28,9 @@ public class Notification {
     @JoinColumn(name = "recipient_id")
     private User recipient;
 
+    @Column(name = "is_read")
+    private boolean read;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
