@@ -31,6 +31,13 @@ public class Notification {
     @Column(name = "is_read")
     private boolean read;
 
+    @Column(name = "title")
+    private String title;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
+    private NotificationType type;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();

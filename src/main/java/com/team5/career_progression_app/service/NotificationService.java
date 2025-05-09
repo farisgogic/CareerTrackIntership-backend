@@ -4,6 +4,7 @@ import com.team5.career_progression_app.dto.FilterCountDTO;
 import com.team5.career_progression_app.dto.NotificationDTO;
 import com.team5.career_progression_app.dto.PaginatedResponse;
 import com.team5.career_progression_app.model.Notification;
+import com.team5.career_progression_app.model.NotificationType;
 import com.team5.career_progression_app.model.User;
 import com.team5.career_progression_app.repository.NotificationRepository;
 import org.springframework.stereotype.Service;
@@ -110,33 +111,45 @@ public class NotificationService {
 
     public void notifyTaskReceived(User recipient, String taskDetails) {
         String message = "Task Received: " + taskDetails;
-        createNotification(recipient, message);
+        createNotification(recipient, message, NotificationType.TASK);
     }
 
     public void notifyTaskFinished(User lead, String taskDetails) {
         String message = "Task Finished: " + taskDetails;
-        createNotification(lead, message);
+        createNotification(lead, message, NotificationType.TASK);
     }
 
     public void notifyFeedbackReceived(User recipient, String feedbackDetails) {
         String message = "Feedback Received: " + feedbackDetails;
-        createNotification(recipient, message);
+        createNotification(recipient, message, NotificationType.FEEDBACK);
     }
 
     public void notifyTaskChanged(User recipient, String taskDetails) {
         String message = "Task Changed: " + taskDetails;
-        createNotification(recipient, message);
+        createNotification(recipient, message, NotificationType.TASK);
     }
 
     public void notifyPromotionReceived(User recipient, String promotionDetails) {
         String message = "Promotion Received: " + promotionDetails;
-        createNotification(recipient, message);
+        createNotification(recipient, message, NotificationType.PROMOTION);
     }
 
-    private void createNotification(User recipient, String message) {
+    public void notifyError(User recipient, String errorDetails) {
+        String message = "Error: " + errorDetails;
+        createNotification(recipient, message, NotificationType.ERROR);
+    }
+
+    public void notifyAlert(User recipient, String alertDetails) {
+        String message = "Alert: " + alertDetails;
+        createNotification(recipient, message, NotificationType.ALERT);
+    }
+
+    private void createNotification(User recipient, String message, NotificationType type) {
         Notification notification = new Notification();
         notification.setMessage(message);
         notification.setRecipient(recipient);
+        notification.setType(type);
+        notification.setTitle(notification.getTitle());
         notificationRepository.save(notification);
     }
 }
