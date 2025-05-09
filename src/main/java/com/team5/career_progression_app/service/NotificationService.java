@@ -23,56 +23,48 @@ public class NotificationService {
 
     public PaginatedResponse<NotificationDTO> getAllForUser(Integer userId, String filter, int page, int size) {
         List<Notification> notifications;
-        
+
         if (filter == null || filter.equalsIgnoreCase("All")) {
             notifications = notificationRepository.findByRecipientIdOrderByCreatedAtDesc(userId);
         } else if (filter.equalsIgnoreCase("Unread")) {
             notifications = notificationRepository.findByRecipientIdAndReadFalseOrderByCreatedAtDesc(userId);
         } else {
-            notifications = notificationRepository.findByRecipientIdAndMessageContainingIgnoreCaseOrderByCreatedAtDesc(
-                userId,
-                getSearchTermForFilter(filter)
-            );
+            try {
+                NotificationType type = NotificationType.valueOf(filter.toUpperCase());
+                notifications = notificationRepository.findByRecipientIdAndTypeOrderByCreatedAtDesc(userId, type);
+            } catch (IllegalArgumentException e) {
+                notifications = new ArrayList<>();
+            }
         }
-    
+
         notifications.sort((n1, n2) -> {
-            if (!n1.isRead() && n2.isRead()) {
-                return -1;
-            }
-            if (n1.isRead() && !n2.isRead()) {
-                return 1;
-            }
+            if (!n1.isRead() && n2.isRead()) return -1;
+            if (n1.isRead() && !n2.isRead()) return 1;
             return n2.getCreatedAt().compareTo(n1.getCreatedAt());
         });
-    
+
         int totalCount = notifications.size();
         int startIndex = page * size;
         int endIndex = Math.min(startIndex + size, totalCount);
-        
+
         List<NotificationDTO> paginatedData = notifications.subList(startIndex, endIndex)
                 .stream()
                 .map(NotificationDTO::new)
                 .collect(Collectors.toList());
-    
+
         return new PaginatedResponse<>(paginatedData, totalCount);
     }
 
-    private String getSearchTermForFilter(String filter) {
-        switch (filter.toLowerCase()) {
-            case "task": return "task";
-            case "comment": return "comment";
-            case "promotion": return "promot";
-            case "meeting": return "meeting";
-            case "message": return "message";
-            case "alert": return "alert";
-            case "review": return "review";
-            case "error": return "error";
-            default: return filter;
-        }
-    }
-
     public List<String> getAvailableFilters(Integer userId) {
-        return List.of("All", "Unread", "Task", "Comment", "Promotion", "Meeting", "Message", "Alert", "Review", "Error");
+        List<String> filters = new ArrayList<>();
+        filters.add("All");
+        filters.add("Unread");
+
+        for (NotificationType type : NotificationType.values()) {
+            filters.add(type.name());
+        }
+
+        return filters;
     }
 
     public Integer getUnreadCount(Integer userId) {
@@ -84,21 +76,17 @@ public class NotificationService {
         filterCounts.add(new FilterCountDTO("All", notificationRepository.countByRecipientId(userId)));
         filterCounts.add(new FilterCountDTO("Unread", notificationRepository.countByRecipientIdAndReadFalse(userId)));
 
-        filterCounts.add(new FilterCountDTO("Task", notificationRepository.countByRecipientIdAndMessageContainingIgnoreCase(userId, "task")));
-        filterCounts.add(new FilterCountDTO("Comment", notificationRepository.countByRecipientIdAndMessageContainingIgnoreCase(userId, "comment")));
-        filterCounts.add(new FilterCountDTO("Promotion", notificationRepository.countByRecipientIdAndMessageContainingIgnoreCase(userId, "promot")));
-        filterCounts.add(new FilterCountDTO("Meeting", notificationRepository.countByRecipientIdAndMessageContainingIgnoreCase(userId, "meeting")));
-        filterCounts.add(new FilterCountDTO("Message", notificationRepository.countByRecipientIdAndMessageContainingIgnoreCase(userId, "message")));
-        filterCounts.add(new FilterCountDTO("Alert", notificationRepository.countByRecipientIdAndMessageContainingIgnoreCase(userId, "alert")));
-        filterCounts.add(new FilterCountDTO("Review", notificationRepository.countByRecipientIdAndMessageContainingIgnoreCase(userId, "review")));
-        filterCounts.add(new FilterCountDTO("Error", notificationRepository.countByRecipientIdAndMessageContainingIgnoreCase(userId, "error")));
+        for (NotificationType type : NotificationType.values()) {
+            int count = notificationRepository.countByRecipientIdAndType(userId, type);
+            filterCounts.add(new FilterCountDTO(type.name(), count));
+        }
 
         return filterCounts;
     }
 
     public void markAsRead(Integer notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
-            .orElseThrow(() -> new RuntimeException("Notification not found"));
+                .orElseThrow(() -> new RuntimeException("Notification not found"));
         notification.setRead(true);
         notificationRepository.save(notification);
     }
@@ -110,46 +98,39 @@ public class NotificationService {
     }
 
     public void notifyTaskReceived(User recipient, String taskDetails) {
-        String message = "Task Received: " + taskDetails;
-        createNotification(recipient, message, NotificationType.TASK);
+        createNotification(recipient, "Task Received: " + taskDetails, "Task received", NotificationType.TASK);
     }
 
     public void notifyTaskFinished(User lead, String taskDetails) {
-        String message = "Task Finished: " + taskDetails;
-        createNotification(lead, message, NotificationType.TASK);
+        createNotification(lead, "Task Finished: " + taskDetails, "Task finished", NotificationType.TASK);
     }
 
     public void notifyFeedbackReceived(User recipient, String feedbackDetails) {
-        String message = "Feedback Received: " + feedbackDetails;
-        createNotification(recipient, message, NotificationType.FEEDBACK);
+        createNotification(recipient, "Feedback Received: " + feedbackDetails, "Feedback received", NotificationType.FEEDBACK);
     }
 
     public void notifyTaskChanged(User recipient, String taskDetails) {
-        String message = "Task Changed: " + taskDetails;
-        createNotification(recipient, message, NotificationType.TASK);
+        createNotification(recipient, "Task Changed: " + taskDetails, "Task changed", NotificationType.TASK);
     }
 
     public void notifyPromotionReceived(User recipient, String promotionDetails) {
-        String message = "Promotion Received: " + promotionDetails;
-        createNotification(recipient, message, NotificationType.PROMOTION);
+        createNotification(recipient, "Promotion Received: " + promotionDetails, "Promotion", NotificationType.PROMOTION);
     }
 
     public void notifyError(User recipient, String errorDetails) {
-        String message = "Error: " + errorDetails;
-        createNotification(recipient, message, NotificationType.ERROR);
+        createNotification(recipient, "Error: " + errorDetails, "Error", NotificationType.ERROR);
     }
 
     public void notifyAlert(User recipient, String alertDetails) {
-        String message = "Alert: " + alertDetails;
-        createNotification(recipient, message, NotificationType.ALERT);
+        createNotification(recipient, "Alert: " + alertDetails, "Alert", NotificationType.ALERT);
     }
 
-    private void createNotification(User recipient, String message, NotificationType type) {
+    private void createNotification(User recipient, String message, String title, NotificationType type) {
         Notification notification = new Notification();
-        notification.setMessage(message);
         notification.setRecipient(recipient);
+        notification.setMessage(message);
+        notification.setTitle(title);
         notification.setType(type);
-        notification.setTitle(notification.getTitle());
         notificationRepository.save(notification);
     }
 }
