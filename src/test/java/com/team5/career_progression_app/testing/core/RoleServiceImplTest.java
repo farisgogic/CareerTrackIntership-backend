@@ -29,9 +29,17 @@ public class RoleServiceImplTest {
     @Autowired
     private RolePermissionRepository rolePermissionRepository;
 
+    private void deletePermissionsForRole(Role role) {
+        List<RolePermission> allPermissions = rolePermissionRepository.findAll();
+        for (RolePermission rp : allPermissions) {
+            if (rp.getRole().getId().equals(role.getId())) {
+                rolePermissionRepository.delete(rp);
+            }
+        }
+    }
+
     @Test
     void givenNewRoleAndPermissions_whenCreatingRole_thenRoleShouldBeCreatedWithGivenPermissions() {
-
         String permissionName1 = "TEST_PERMISSION_1";
         String permissionName2 = "TEST_PERMISSION_2";
 
@@ -50,7 +58,9 @@ public class RoleServiceImplTest {
                 .containsExactlyInAnyOrderElementsOf(List.of(permissionName1, permissionName2));
 
         String roleName = "TEST_ROLE";
-        Role createdRole = roleService.insertRole(roleName, List.of(permissionName1, permissionName2));
+        roleService.insertRole(roleName, List.of(permissionName1, permissionName2));
+        Role createdRole = roleRepository.findByName(roleName)
+                .orElseThrow(() -> new AssertionError("Role not created"));
 
         assertThat(createdRole).isNotNull();
         assertThat(createdRole.getId()).isNotNull();
@@ -74,7 +84,6 @@ public class RoleServiceImplTest {
 
     @Test
     void givenExistingRoleWithPermissions_whenUpdatingNameAndPermissions_thenBothShouldBeUpdated() {
-
         String initialRoleName = "INITIAL_ROLE";
         String updatedRoleName = "UPDATED_ROLE";
 
@@ -85,17 +94,14 @@ public class RoleServiceImplTest {
         initialPermission.setName(initialPermissionName);
         permissionRepository.save(initialPermission);
 
-        Role createdRole = roleService.insertRole(initialRoleName, List.of(initialPermissionName));
+        roleService.insertRole(initialRoleName, List.of(initialPermissionName));
+        Role createdRole = roleRepository.findByName(initialRoleName)
+                .orElseThrow(() -> new AssertionError("Initial role not found"));
 
         createdRole.setName(updatedRoleName);
         roleRepository.save(createdRole);
 
-        List<RolePermission> allPermissions = rolePermissionRepository.findAll();
-        for (RolePermission rp : allPermissions) {
-            if (rp.getRole().getId().equals(createdRole.getId())) {
-                rolePermissionRepository.delete(rp);
-            }
-        }
+        deletePermissionsForRole(createdRole);
 
         Permission updatedPermission = new Permission();
         updatedPermission.setName(updatedPermissionName);
@@ -122,14 +128,11 @@ public class RoleServiceImplTest {
         permission.setName(permissionName);
         permission = permissionRepository.save(permission);
 
-        Role createdRole = roleService.insertRole(roleName, List.of(permissionName));
+        roleService.insertRole(roleName, List.of(permissionName));
+        Role createdRole = roleRepository.findByName(roleName)
+                .orElseThrow(() -> new AssertionError("Role not created"));
 
-        List<RolePermission> allPermissions = rolePermissionRepository.findAll();
-        for (RolePermission rp : allPermissions) {
-            if (rp.getRole().getId().equals(createdRole.getId())) {
-                rolePermissionRepository.delete(rp);
-            }
-        }
+        deletePermissionsForRole(createdRole);
 
         roleRepository.delete(createdRole);
 
@@ -143,5 +146,4 @@ public class RoleServiceImplTest {
             roleService.insertRole(null, Collections.emptyList());
         });
     }
-
 }

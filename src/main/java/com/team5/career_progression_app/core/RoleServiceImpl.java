@@ -12,14 +12,9 @@ import com.team5.career_progression_app.repository.RolePermissionRepository;
 import com.team5.career_progression_app.repository.RoleRepository;
 import com.team5.career_progression_app.repository.UserRepository;
 import com.team5.career_progression_app.service.RoleService;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -42,7 +37,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Transactional
     @Override
-    public Role insertRole(String roleName, List<String> permissionNames) {
+    public void insertRole(String roleName, List<String> permissionNames) {
 
         Role role = new Role();
         role.setName(roleName);
@@ -56,7 +51,6 @@ public class RoleServiceImpl implements RoleService {
             rp.setPermission(permission);
             rolePermissionRepository.save(rp);
         }
-        return role;
     }
 
     public List<RoleDTO> getAllRoles() {
