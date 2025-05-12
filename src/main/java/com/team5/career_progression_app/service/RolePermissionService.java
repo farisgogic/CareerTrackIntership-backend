@@ -41,7 +41,7 @@ public class RolePermissionService {
         List<RolePermission> rolePermissions = rolePermissionRepository.findAll();
 
         List<RoleDTO> roleDTOs = roles.stream()
-                .map(role -> new RoleDTO(role.getId(), role.getName()))
+                .map(role -> new RoleDTO(role.getId(), role.getName(),role.getRolePermissions().stream().map(permission -> permission.getPermission().getName()).toList()))
                 .collect(Collectors.toList());
 
         List<PermissionDTO> permissionDTOs = permissions.stream()
@@ -51,7 +51,7 @@ public class RolePermissionService {
         List<RolePermissionDTO> rolePermissionDTOs = rolePermissions.stream()
                 .map(rolePermission -> new RolePermissionDTO(
                         rolePermission.getId(),
-                        new RoleDTO(rolePermission.getRole().getId(), rolePermission.getRole().getName()),
+                        new RoleDTO(rolePermission.getRole()),
                         new PermissionDTO(rolePermission.getPermission().getId(),
                                 rolePermission.getPermission().getName())))
                 .collect(Collectors.toList());
@@ -71,7 +71,7 @@ public class RolePermissionService {
                 .collect(Collectors.toList());
 
         RoleWithPermissionsDTO roleWithPermissionsDTO = new RoleWithPermissionsDTO(
-                new RoleDTO(role.getId(), role.getName()),
+                new RoleDTO(role),
                 permissions.stream()
                         .map(permission -> new PermissionDTO(permission.getId(), permission.getName()))
                         .collect(Collectors.toList()));
@@ -97,7 +97,7 @@ public class RolePermissionService {
 
         RolePermissionDTO rolePermissionDTO = new RolePermissionDTO(
                 rolePermission.getId(),
-                new RoleDTO(rolePermission.getRole().getId(), rolePermission.getRole().getName()),
+                new RoleDTO(role),
                 new PermissionDTO(rolePermission.getPermission().getId(), rolePermission.getPermission().getName()));
 
         return new ApiResponse<>(true, "Permission assigned to role", rolePermissionDTO);

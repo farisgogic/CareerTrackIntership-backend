@@ -28,7 +28,7 @@ public class JwtService {
         this.roleRepository = roleRepository;
     }
 
-    public String generateToken(Payload googlePayload, String roleName) {
+    public String generateToken(Payload googlePayload, String roleName, Integer userId) {
         Map<String, Object> claims = new HashMap<>();
         
         Role role = roleRepository.findRoleByName(roleName)
@@ -42,6 +42,7 @@ public class JwtService {
         claims.put("family_name", googlePayload.get("family_name"));
         claims.put("email_verified", googlePayload.getEmailVerified());
         claims.put("role", roleName);
+        claims.put("user_id", userId);
 
         List<Integer> permissionIds = role.getRolePermissions().stream()
             .map(rp -> rp.getPermission().getId())
@@ -104,4 +105,9 @@ public class JwtService {
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
+
+    public Integer extractUserId(String token) {
+        return extractClaim(token, claims -> claims.get("user_id", Integer.class)); 
+    }
+    
 }
