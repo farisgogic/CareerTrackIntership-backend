@@ -1,9 +1,11 @@
 package com.team5.career_progression_app.service;
 
-import com.team5.career_progression_app.dto.FilterCountDTO;
+import com.team5.career_progression_app.dto.NotificationFilterCountDTO;
 import com.team5.career_progression_app.dto.NotificationDTO;
 import com.team5.career_progression_app.dto.PaginatedResponse;
+import com.team5.career_progression_app.exception.NotificationNotFoundException;
 import com.team5.career_progression_app.model.Notification;
+import com.team5.career_progression_app.model.NotificationFilter;
 import com.team5.career_progression_app.model.NotificationType;
 import com.team5.career_progression_app.model.User;
 import com.team5.career_progression_app.repository.NotificationRepository;
@@ -21,20 +23,16 @@ public class NotificationService {
         this.notificationRepository = notificationRepository;
     }
 
-    public PaginatedResponse<NotificationDTO> getAllForUser(Integer userId, String filter, int page, int size) {
+    public PaginatedResponse<NotificationDTO> getAllForUser(Integer userId, NotificationFilter filter, int page, int size) {
         List<Notification> notifications;
 
-        if (filter == null || filter.equalsIgnoreCase("All")) {
+        if (filter == null || filter == NotificationFilter.ALL) {
             notifications = notificationRepository.findByRecipientIdOrderByCreatedAtDesc(userId);
-        } else if (filter.equalsIgnoreCase("Unread")) {
+        } else if (filter == NotificationFilter.UNREAD) {
             notifications = notificationRepository.findByRecipientIdAndReadFalseOrderByCreatedAtDesc(userId);
         } else {
-            try {
-                NotificationType type = NotificationType.valueOf(filter.toUpperCase());
-                notifications = notificationRepository.findByRecipientIdAndTypeOrderByCreatedAtDesc(userId, type);
-            } catch (IllegalArgumentException e) {
-                notifications = new ArrayList<>();
-            }
+            NotificationType type = NotificationType.valueOf(filter.name());
+            notifications = notificationRepository.findByRecipientIdAndTypeOrderByCreatedAtDesc(userId, type);
         }
 
         notifications.sort((n1, n2) -> {
@@ -44,6 +42,7 @@ public class NotificationService {
         });
 
         int totalCount = notifications.size();
+        int totalPages  = (int) Math.ceil((double) totalCount / size);
         int startIndex = page * size;
         int endIndex = Math.min(startIndex + size, totalCount);
 
@@ -52,16 +51,16 @@ public class NotificationService {
                 .map(NotificationDTO::new)
                 .collect(Collectors.toList());
 
-        return new PaginatedResponse<>(paginatedData, totalCount);
+        return new PaginatedResponse<>(paginatedData, totalCount, page, size, totalPages);
     }
 
-    public List<String> getAvailableFilters(Integer userId) {
-        List<String> filters = new ArrayList<>();
-        filters.add("All");
-        filters.add("Unread");
+    public List<NotificationFilter> getAvailableFilters(Integer userId) {
+        List<NotificationFilter> filters = new ArrayList<>();
+        filters.add(NotificationFilter.ALL);
+        filters.add(NotificationFilter.UNREAD);
 
         for (NotificationType type : NotificationType.values()) {
-            filters.add(type.name());
+            filters.add(NotificationFilter.valueOf(type.name()));
         }
 
         return filters;
@@ -71,14 +70,14 @@ public class NotificationService {
         return notificationRepository.countByRecipientIdAndReadFalse(userId);
     }
 
-    public List<FilterCountDTO> getFilterCounts(Integer userId) {
-        List<FilterCountDTO> filterCounts = new ArrayList<>();
-        filterCounts.add(new FilterCountDTO("All", notificationRepository.countByRecipientId(userId)));
-        filterCounts.add(new FilterCountDTO("Unread", notificationRepository.countByRecipientIdAndReadFalse(userId)));
+    public List<NotificationFilterCountDTO> getFilterCounts(Integer userId) {
+        List<NotificationFilterCountDTO> filterCounts = new ArrayList<>();
+        filterCounts.add(new NotificationFilterCountDTO(NotificationFilter.ALL.name(), notificationRepository.countByRecipientId(userId)));
+        filterCounts.add(new NotificationFilterCountDTO(NotificationFilter.UNREAD.name(), notificationRepository.countByRecipientIdAndReadFalse(userId)));
 
         for (NotificationType type : NotificationType.values()) {
             int count = notificationRepository.countByRecipientIdAndType(userId, type);
-            filterCounts.add(new FilterCountDTO(type.name(), count));
+            filterCounts.add(new NotificationFilterCountDTO(type.name(), count));
         }
 
         return filterCounts;
@@ -86,10 +85,11 @@ public class NotificationService {
 
     public void markAsRead(Integer notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new RuntimeException("Notification not found"));
+            .orElseThrow(() -> new NotificationNotFoundException(notificationId));
         notification.setRead(true);
         notificationRepository.save(notification);
     }
+    
 
     public void markAllAsRead(Integer userId) {
         List<Notification> notifications = notificationRepository.findByRecipientIdOrderByCreatedAtDesc(userId);

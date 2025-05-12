@@ -10,4 +10,7 @@ import lombok.Data;
 public class PaginatedResponse<T> {
     private List<T> data;
     private int totalCount;
+    private int page;
+    private int size;
+    private int totalPages;
 }

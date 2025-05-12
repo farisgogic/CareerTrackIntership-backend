@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class FilterCountDTO {
+public class NotificationFilterCountDTO {
     private String filter;
     private Integer count;
 }
