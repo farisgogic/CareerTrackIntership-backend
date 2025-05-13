@@ -27,6 +27,12 @@ public class User {
     @Column(name = "email")
     private String email;
 
+    @Column(name = "active")
+    private boolean active;
+
+    @Column(name = "profile_picture_url")
+    private String profilePictureUrl;
+
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
@@ -61,16 +67,6 @@ public class User {
     @OneToMany(mappedBy = "author")
     private List<TaskComment> taskComments;
 
-    @Column(name = "active")
-    private boolean active;
-
-    @Column(name = "profile_picture_url")
-    private String profilePictureUrl;
-
-    public String getProfilePictureUrl() {
-        return profilePictureUrl;
-    }
-    
     @Override
     public String toString() {
         return "User{" +
