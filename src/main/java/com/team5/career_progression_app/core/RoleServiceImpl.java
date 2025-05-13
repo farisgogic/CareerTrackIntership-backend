@@ -14,7 +14,6 @@ import com.team5.career_progression_app.repository.UserRepository;
 import com.team5.career_progression_app.service.RoleService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 @Service
