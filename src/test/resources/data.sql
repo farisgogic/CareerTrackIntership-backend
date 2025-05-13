@@ -41,9 +41,31 @@ INSERT INTO OnDemandReport (data, created_at, recipient_id) VALUES
 ('Report data for User 2', NOW(), 2)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO Notification (message, created_at, recipient_id) VALUES
-('You have a new task assigned', NOW(), 1),
-('Your task status has been updated', NOW(), 2)
+INSERT INTO notification (message, created_at, recipient_id, is_read, title, type) VALUES 
+  ('John commented on your ticket: Please add tests.', NOW() - INTERVAL '6 days', 1, false, 'New Comment', 'COMMENT'),
+  ('Team meeting scheduled for Monday at 10 AM.', NOW() - INTERVAL '7 days', 2, false, 'Meeting scheduled', 'MEETING'),
+  ('You received a new message from HR.', NOW() - INTERVAL '8 days', 1, true, 'Message from HR', 'MESSAGE'),
+  ('Your latest review is now available.', NOW() - INTERVAL '9 days', 3, false, 'Review ready', 'REVIEW'),
+  ('New comment on your post: Looks good!', NOW() - INTERVAL '10 days', 3, false, 'Comment', 'COMMENT'),
+  ('Promotion review scheduled for next week.', NOW() - INTERVAL '11 days', 2, false, 'Upcoming Review', 'REVIEW'),
+  ('Reminder: Daily standup at 9 AM.', NOW() - INTERVAL '12 days', 1, true, 'Daily Meeting', 'MEETING'),
+  ('You received a private message from your team lead.', NOW() - INTERVAL '13 days', 4, false, 'Message', 'MESSAGE'),
+  ('Weekly feedback submitted successfully.', NOW() - INTERVAL '14 days', 5, true, 'Feedback Sent', 'FEEDBACK'),
+  ('New task assigned: Prepare Q2 Report', NOW() - INTERVAL '15 days', 5, false, 'Task assigned', 'TASK'),
+  ('Alert: Unusual login attempt detected.', NOW() - INTERVAL '16 days', 1, false, 'Security Alert', 'ALERT'),
+  ('Error while processing payroll data.', NOW() - INTERVAL '17 days', 2, false, 'Critical Error', 'ERROR'),
+  ('New review: All objectives met this quarter.', NOW() - INTERVAL '18 days', 1, true, 'Quarterly Review', 'REVIEW'),
+  ('Manager left a comment on your ticket.', NOW() - INTERVAL '19 days', 3, false, 'Comment', 'COMMENT'),
+  ('Meeting rescheduled: Friday 3 PM.', NOW() - INTERVAL '20 days', 4, false, 'Meeting Change', 'MEETING'),
+  ('You''ve received a new promotion: Tech Lead.', NOW() - INTERVAL '21 days', 5, true, 'Congratulations', 'PROMOTION'),
+  ('Message from CTO: Please review the roadmap.', NOW() - INTERVAL '22 days', 3, false, 'Message', 'MESSAGE'),
+  ('Don''t forget to submit your monthly report.', NOW() - INTERVAL '23 days', 2, false, 'Reminder', 'ALERT'),
+  ('Feedback: Improve response time to tickets.', NOW() - INTERVAL '24 days', 1, true, 'Performance Feedback', 'FEEDBACK'),
+  ('Task overdue: Finalize UI components.', NOW() - INTERVAL '25 days', 1, false, 'Task overdue', 'TASK'),
+  ('Unexpected error in analytics module.', NOW() - INTERVAL '26 days', 3, false, 'System Error', 'ERROR'),
+  ('Your review was approved by upper management.', NOW() - INTERVAL '27 days', 4, true, 'Review Approved', 'REVIEW'),
+  ('Comment from peer: Consider optimizing the code.', NOW() - INTERVAL '28 days', 2, false, 'Peer Feedback', 'COMMENT'),
+  ('Upcoming meeting: Sprint Planning - Monday', NOW() - INTERVAL '29 days', 5, false, 'Planning Meeting', 'MEETING')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO PromotionStatus (name) VALUES ('PENDING'), ('APPROVED'), ('REJECTED')

@@ -21,7 +21,6 @@ public class TaskTemplateController {
     }
 
     private final Map<Long, String> tasks = new HashMap<>();
-    private long idCounter = 1;
 
     @GetMapping
     public List<String> getAllTasks() {

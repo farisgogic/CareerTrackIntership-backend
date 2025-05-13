@@ -1,7 +1,6 @@
 package com.team5.career_progression_app.restController;
 
 import com.team5.career_progression_app.dto.TemplateDTO;
-import com.team5.career_progression_app.model.Task;
 import com.team5.career_progression_app.service.TemplateService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;

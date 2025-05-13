@@ -24,35 +24,44 @@ public class NotificationService {
     }
 
     public PaginatedResponse<NotificationDTO> getAllForUser(Integer userId, NotificationFilter filter, int page, int size) {
-        List<Notification> notifications;
+        List<Notification> notifications = fetchFilteredNotifications(userId, filter);
+        sortNotifications(notifications);
+        return paginateNotifications(notifications, page, size);
+    }
 
+    private List<Notification> fetchFilteredNotifications(Integer userId, NotificationFilter filter) {
         if (filter == null || filter == NotificationFilter.ALL) {
-            notifications = notificationRepository.findByRecipientIdOrderByCreatedAtDesc(userId);
+            return notificationRepository.findByRecipientIdOrderByCreatedAtDesc(userId);
         } else if (filter == NotificationFilter.UNREAD) {
-            notifications = notificationRepository.findByRecipientIdAndReadFalseOrderByCreatedAtDesc(userId);
+            return notificationRepository.findByRecipientIdAndReadFalseOrderByCreatedAtDesc(userId);
         } else {
             NotificationType type = NotificationType.valueOf(filter.name());
-            notifications = notificationRepository.findByRecipientIdAndTypeOrderByCreatedAtDesc(userId, type);
+            return notificationRepository.findByRecipientIdAndTypeOrderByCreatedAtDesc(userId, type);
         }
-
+    }
+    
+    private void sortNotifications(List<Notification> notifications) {
         notifications.sort((n1, n2) -> {
             if (!n1.isRead() && n2.isRead()) return -1;
             if (n1.isRead() && !n2.isRead()) return 1;
             return n2.getCreatedAt().compareTo(n1.getCreatedAt());
         });
-
+    }
+    
+    private PaginatedResponse<NotificationDTO> paginateNotifications(List<Notification> notifications, int page, int size) {
         int totalCount = notifications.size();
-        int totalPages  = (int) Math.ceil((double) totalCount / size);
+        int totalPages = (int) Math.ceil((double) totalCount / size);
         int startIndex = page * size;
         int endIndex = Math.min(startIndex + size, totalCount);
-
+    
         List<NotificationDTO> paginatedData = notifications.subList(startIndex, endIndex)
                 .stream()
                 .map(NotificationDTO::new)
                 .collect(Collectors.toList());
-
+    
         return new PaginatedResponse<>(paginatedData, totalCount, page, size, totalPages);
     }
+    
 
     public List<NotificationFilter> getAvailableFilters(Integer userId) {
         List<NotificationFilter> filters = new ArrayList<>();

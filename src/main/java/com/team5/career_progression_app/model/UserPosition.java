@@ -13,27 +13,27 @@ public class UserPosition {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Integer id;
 
-    @Column(name = "level")
-    private Integer level;
-
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "position_id")
+    @JoinColumn(name = "position_id", nullable = false)
     private Position position;
+
+    @ManyToOne
+    @JoinColumn(name = "position_level_id", nullable = false)
+    private PositionLevel positionLevel;
 
     @Override
     public String toString() {
         return "UserPosition{" +
                 "id=" + id +
-                ", level=" + level +
-                "userId=" + user.getId() +
-                "positionId=" + position.getId() +
+                ", userId=" + user.getId() +
+                ", positionId=" + position.getId() +
+                ", positionLevel=" + positionLevel.getLevel() +
                 '}';
     }
 }
