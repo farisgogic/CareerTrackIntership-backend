@@ -10,7 +10,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/template")
 @AllArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
 public class TemplateController {
 
     private final TemplateService templateService;

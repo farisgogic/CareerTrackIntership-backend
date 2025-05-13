@@ -25,7 +25,8 @@ public class RoleServiceImpl implements RoleService {
     public RolePermissionRepository rolePermissionRepository;
     public UserRepository userRepository;
 
-    public RoleServiceImpl(PermissionRepository permissionRepository, RoleRepository roleRepository, RolePermissionRepository rolePermissionRepository) {
+    public RoleServiceImpl(PermissionRepository permissionRepository, RoleRepository roleRepository,
+            RolePermissionRepository rolePermissionRepository) {
         this.permissionRepository = permissionRepository;
         this.roleRepository = roleRepository;
         this.rolePermissionRepository = rolePermissionRepository;
@@ -34,6 +35,11 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public List<String> getAllPermissionNames() {
         return permissionRepository.findAllPermissionNames();
+    }
+
+    private boolean isDefaultRole(Role role) {
+        String roleName = role.getName();
+        return roleName.equalsIgnoreCase("USER") || roleName.equalsIgnoreCase("ADMIN");
     }
 
     @Transactional
@@ -70,7 +76,7 @@ public class RoleServiceImpl implements RoleService {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + roleId));
 
-        if (role.getName().equalsIgnoreCase("USER") || role.getName().equalsIgnoreCase("ADMIN")) {
+        if (isDefaultRole(role)) {
             throw new InvalidRequestException("Default roles USER and ADMIN cannot be modified.");
         }
 
@@ -90,7 +96,6 @@ public class RoleServiceImpl implements RoleService {
         }
     }
 
-
     public void deleteRole(Integer id) {
         Role userRole = roleRepository.findByName("USER")
                 .orElseThrow(() -> new ResourceNotFoundException("Default USER role not found."));
@@ -98,7 +103,7 @@ public class RoleServiceImpl implements RoleService {
         Role role = roleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found with id: " + id));
 
-        if (role.getName().equalsIgnoreCase("USER") || role.getName().equalsIgnoreCase("ADMIN")) {
+        if (isDefaultRole(role)) {
             throw new InvalidRequestException("Default roles USER and ADMIN cannot be deleted.");
         }
 
@@ -111,6 +116,5 @@ public class RoleServiceImpl implements RoleService {
 
         roleRepository.delete(role);
     }
-
 
 }
