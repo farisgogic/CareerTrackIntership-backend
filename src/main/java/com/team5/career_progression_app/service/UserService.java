@@ -26,6 +26,12 @@ public class UserService {
         this.permissionRepository = permissionRepository;
     }
 
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(UserDTO::new)
+                .toList();
+    }
+
     public List<UserDTO> getInactiveUsers() {
         return userRepository.findByActiveFalse().stream()
                 .map(UserDTO::new)

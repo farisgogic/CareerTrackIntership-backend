@@ -19,6 +19,11 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
+
     @GetMapping("/inactive")
     public ResponseEntity<List<UserDTO>> getInactiveUsers() {
         return ResponseEntity.ok(userService.getInactiveUsers());
