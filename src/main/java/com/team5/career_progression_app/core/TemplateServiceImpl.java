@@ -7,7 +7,6 @@ import com.team5.career_progression_app.service.TemplateService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

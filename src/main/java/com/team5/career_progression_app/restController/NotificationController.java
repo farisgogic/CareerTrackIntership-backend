@@ -1,8 +1,10 @@
 package com.team5.career_progression_app.restController;
 
 import com.team5.career_progression_app.dto.ApiResponse;
-import com.team5.career_progression_app.dto.FilterCountDTO;
+import com.team5.career_progression_app.dto.NotificationFilterCountDTO;
 import com.team5.career_progression_app.dto.NotificationDTO;
+import com.team5.career_progression_app.dto.PaginatedResponse;
+import com.team5.career_progression_app.model.NotificationFilter;
 import com.team5.career_progression_app.service.NotificationService;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,17 +21,19 @@ public class NotificationController {
     }
 
     @GetMapping("/{userId}")
-    public ApiResponse<List<NotificationDTO>> getNotifications(
+    public ApiResponse<PaginatedResponse<NotificationDTO>> getNotifications(
             @PathVariable Integer userId,
-            @RequestParam(required = false) String filter) {
+            @RequestParam NotificationFilter filter,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
 
-        List<NotificationDTO> notifications = notificationService.getAllForUser(userId, filter);
-        return new ApiResponse<>(true, "Notifications fetched successfully", notifications);
+        PaginatedResponse<NotificationDTO> response = notificationService.getAllForUser(userId, filter, page, size);
+        return new ApiResponse<>(true, "Notifications fetched successfully", response);
     }
 
     @GetMapping("/{userId}/filters")
-    public ApiResponse<List<String>> getAvailableFilters(@PathVariable Integer userId) {
-        List<String> filters = notificationService.getAvailableFilters(userId);
+    public ApiResponse<List<NotificationFilter>> getAvailableFilters(@PathVariable Integer userId) {
+        List<NotificationFilter> filters = notificationService.getAvailableFilters(userId);
         return new ApiResponse<>(true, "Available filters fetched", filters);
     }
 
@@ -40,8 +44,8 @@ public class NotificationController {
     }
 
     @GetMapping("/{userId}/filter-counts")
-    public ApiResponse<List<FilterCountDTO>> getFilterCounts(@PathVariable Integer userId) {
-        List<FilterCountDTO> filterCounts = notificationService.getFilterCounts(userId);
+    public ApiResponse<List<NotificationFilterCountDTO>> getFilterCounts(@PathVariable Integer userId) {
+        List<NotificationFilterCountDTO> filterCounts = notificationService.getFilterCounts(userId);
         return new ApiResponse<>(true, "Filter counts fetched", filterCounts);
     }
 

@@ -1,11 +1,9 @@
 package com.team5.career_progression_app.restController;
 
-import com.team5.career_progression_app.core.RoleServiceImpl;
 import com.team5.career_progression_app.dto.ApiResponse;
 import com.team5.career_progression_app.dto.RoleDTO;
 import com.team5.career_progression_app.service.RoleService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

@@ -17,7 +17,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex,
+            WebRequest request) {
         return new ResponseEntity<>(new ErrorResponse(
                 "not_found", ex.getMessage()), HttpStatus.NOT_FOUND);
     }
@@ -35,25 +36,29 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DuplicateAssignmentException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateAssignmentException(DuplicateAssignmentException ex, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleDuplicateAssignmentException(DuplicateAssignmentException ex,
+            WebRequest request) {
         return new ResponseEntity<>(new ErrorResponse(
                 "duplicate_assignment", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(UserAlreadyActiveException.class)
-    public ResponseEntity<ErrorResponse> handleUserAlreadyActiveException(UserAlreadyActiveException ex, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleUserAlreadyActiveException(UserAlreadyActiveException ex,
+            WebRequest request) {
         return new ResponseEntity<>(new ErrorResponse(
                 "user_already_active", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(TokenVerificationException.class)
-    public ResponseEntity<ErrorResponse> handleTokenVerificationException(TokenVerificationException ex, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleTokenVerificationException(TokenVerificationException ex,
+            WebRequest request) {
         return new ResponseEntity<>(new ErrorResponse(
                 "token_verification_error", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(TokenRevocationException.class)
-    public ResponseEntity<ErrorResponse> handleTokenRevocationException(TokenRevocationException ex, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleTokenRevocationException(TokenRevocationException ex,
+            WebRequest request) {
         return new ResponseEntity<>(new ErrorResponse(
                 "token_revocation_error", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
@@ -62,5 +67,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleInvalidRequestException(InvalidRequestException ex, WebRequest request) {
         return new ResponseEntity<>(new ErrorResponse(
                 "bad_request", ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotificationNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotificationNotFoundException(NotificationNotFoundException ex,
+            WebRequest request) {
+        return new ResponseEntity<>(new ErrorResponse(
+                "notification_not_found", ex.getMessage()), HttpStatus.NOT_FOUND);
     }
 }
