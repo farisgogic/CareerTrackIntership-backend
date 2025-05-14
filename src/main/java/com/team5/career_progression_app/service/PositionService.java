@@ -21,6 +21,6 @@ public class PositionService {
     public List<PositionDTO> getAllPositions(){
         List<Position> positions = positionRepository.findAll();
 
-        return positions.stream().map(position -> new PositionDTO(position.getId(), position.getName())).collect(Collectors.toList());
+        return positions.stream().map(position -> new PositionDTO(position.getId(), position.getName())).toList();
     }
 }
