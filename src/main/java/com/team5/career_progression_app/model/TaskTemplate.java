@@ -30,6 +30,9 @@ public class TaskTemplate {
     @OneToMany(mappedBy = "template")
     private List<Task> tasks;
 
+    @OneToMany(mappedBy = "template")
+    private List<TemplateSkill> templateSkills;
+
     @Override
     public String toString() {
         return "TaskTemplate{" +
@@ -38,5 +41,9 @@ public class TaskTemplate {
                 ", description='" + description + '\'' +
                 ", taskRequirements='" + taskRequirements + '\'' +
                 '}';
+    }
+
+    public TaskTemplate(Integer id) {
+        this.id = id;
     }
 }
