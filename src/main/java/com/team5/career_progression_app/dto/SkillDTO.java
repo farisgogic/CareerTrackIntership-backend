@@ -1,5 +1,7 @@
 package com.team5.career_progression_app.dto;
 
+import com.team5.career_progression_app.model.Skill;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,11 +14,13 @@ public class SkillDTO {
     private String name;
     private Integer skillTypeId;
     private String skillTypeName;
-    
-    public SkillDTO(Integer id, String name, Integer skillTypeId, String skillTypeName) {
-        this.id = id;
-        this.name = name;
-        this.skillTypeId = skillTypeId;
-        this.skillTypeName = skillTypeName;
+
+    public SkillDTO(Skill skill) {
+        this.id = skill.getId();
+        this.name = skill.getName();
+        if (skill.getSkillType() != null) {
+            this.skillTypeId = skill.getSkillType().getId();
+            this.skillTypeName = skill.getSkillType().getName();
+        }
     }
 }

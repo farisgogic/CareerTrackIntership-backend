@@ -4,6 +4,7 @@ import com.team5.career_progression_app.dto.*;
 import com.team5.career_progression_app.exception.*;
 import com.team5.career_progression_app.model.*;
 import com.team5.career_progression_app.repository.*;
+
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -194,27 +195,15 @@ public class SkillService {
     }
 
     private SkillDTO convertToSkillDTO(Skill skill) {
-        return new SkillDTO(
-                skill.getId(),
-                skill.getName(),
-                skill.getSkillType().getId(),
-                skill.getSkillType().getName());
+        return new SkillDTO(skill);
     }
 
     private TemplateSkillDTO convertToTemplateSkillDTO(TemplateSkill templateSkill) {
-        return new TemplateSkillDTO(
-                templateSkill.getTemplate().getId(),
-                templateSkill.getSkill().getId(),
-                templateSkill.getSkill().getName(),
-                templateSkill.getLevel());
+        return new TemplateSkillDTO(templateSkill);
     }
 
     private UserSkillDTO convertToUserSkillDTO(UserSkill userSkill) {
-        return new UserSkillDTO(
-                userSkill.getUser().getId(),
-                userSkill.getSkill().getId(),
-                userSkill.getSkill().getName(),
-                userSkill.getLevel());
+        return new UserSkillDTO(userSkill);
     }
 
     private TagDTO convertToTagDTO(Tag tag) {
