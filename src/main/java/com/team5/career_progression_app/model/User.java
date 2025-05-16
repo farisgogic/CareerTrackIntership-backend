@@ -67,6 +67,9 @@ public class User {
     @OneToMany(mappedBy = "author")
     private List<TaskComment> taskComments;
 
+    @OneToMany(mappedBy = "user")
+    private List<UserSkill> userSkills;
+
     @Override
     public String toString() {
         return "User{" +
@@ -76,5 +79,9 @@ public class User {
                 ", email='" + email + '\'' +
                 ", role=" + role.getId() +
                 '}';
+    }
+
+    public User(Integer id) {
+        this.id = id;
     }
 }
