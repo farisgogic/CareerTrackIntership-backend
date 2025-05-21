@@ -2,6 +2,7 @@ package com.team5.career_progression_app.restController;
 
 import com.team5.career_progression_app.dto.TemplateDTO;
 import com.team5.career_progression_app.service.TemplateService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,12 +17,12 @@ public class TemplateController {
 
 
     @PostMapping
-    public TemplateDTO createTemplate(@RequestBody TemplateDTO templateDTO) {
+    public TemplateDTO createTemplate(@Valid @RequestBody TemplateDTO templateDTO) {
         return this.templateService.createTemplate(templateDTO);
     }
 
     @PutMapping
-    public TemplateDTO updateTemplate(@RequestBody TemplateDTO templateDTO) {
+    public TemplateDTO updateTemplate(@Valid @RequestBody TemplateDTO templateDTO) {
         return this.templateService.updateTemplate(templateDTO);
     }
 

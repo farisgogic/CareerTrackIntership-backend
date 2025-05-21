@@ -1,6 +1,7 @@
 package com.team5.career_progression_app.dto;
 
 import com.team5.career_progression_app.model.Role;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class RoleDTO {
     private Integer id;
+    @NotBlank(message = "Role name must not be empty")
     private String name;
     private List<String> permissionNames;
 

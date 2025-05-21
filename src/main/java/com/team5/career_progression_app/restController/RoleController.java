@@ -3,6 +3,7 @@ package com.team5.career_progression_app.restController;
 import com.team5.career_progression_app.dto.ApiResponse;
 import com.team5.career_progression_app.dto.RoleDTO;
 import com.team5.career_progression_app.service.RoleService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("role")
+@RequestMapping("/api/role")
 @AllArgsConstructor
 public class RoleController {
 
@@ -22,7 +23,7 @@ public class RoleController {
     }
 
     @PostMapping("/selectedPermissions")
-    public ApiResponse<Void> getSelectedPermissions(@RequestBody RoleDTO request) {
+    public ApiResponse<Void> getSelectedPermissions(@Valid @RequestBody RoleDTO request) {
         String roleName = request.getName();
         List<String> permissionsNames = request.getPermissionNames();
         roleService.insertRole(roleName, permissionsNames);
