@@ -60,4 +60,16 @@ public class UserController {
         return ResponseEntity.ok(userService.getUsersWithFilters(active, name));
     }
 
+    @PatchMapping("/{id}/role")
+    public ResponseEntity<?> updateUserRole(@PathVariable Integer id, @RequestBody String newRoleName) {
+        userService.updateUserRole(id, newRoleName.toUpperCase());
+        return ResponseEntity.ok("User role updated successfully.");
+    }
+
+    @DeleteMapping("/{id}/role")
+    public ResponseEntity<?> deleteUserRole(@PathVariable Integer id) {
+        userService.deleteUserRoleAndDeactivate(id);
+        return ResponseEntity.ok("User role removed, reset to USER, and user deactivated.");
+    }
+
 }
