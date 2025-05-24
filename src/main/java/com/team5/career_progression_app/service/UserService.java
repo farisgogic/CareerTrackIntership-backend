@@ -4,31 +4,27 @@ import com.team5.career_progression_app.dto.ApiResponse;
 import com.team5.career_progression_app.dto.UserDTO;
 import com.team5.career_progression_app.exception.AccessDeniedException;
 import com.team5.career_progression_app.exception.ResourceNotFoundException;
+import com.team5.career_progression_app.exception.RoleNotFoundException;
+import com.team5.career_progression_app.exception.UserNotFoundException;
 import com.team5.career_progression_app.model.Permission;
 import com.team5.career_progression_app.model.Role;
 import com.team5.career_progression_app.model.User;
 import com.team5.career_progression_app.repository.PermissionRepository;
 import com.team5.career_progression_app.repository.RoleRepository;
 import com.team5.career_progression_app.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final PermissionRepository permissionRepository;
     private final JwtService jwtService;
     private final RoleRepository roleRepository;
-
-    public UserService(UserRepository userRepository, JwtService jwtService,
-                       PermissionRepository permissionRepository, RoleRepository roleRepository) {
-        this.userRepository = userRepository;
-        this.jwtService = jwtService;
-        this.permissionRepository = permissionRepository;
-        this.roleRepository = roleRepository;
-    }
 
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream()
@@ -86,10 +82,10 @@ public class UserService {
 
     public void updateUserRole(Integer userId, String roleName) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() ->  new UserNotFoundException(userId));
 
         Role role = roleRepository.findByName(roleName)
-                .orElseThrow(() -> new RuntimeException("Role not found: " + roleName));
+                .orElseThrow(() -> new RoleNotFoundException(roleName));
 
         user.setRole(role);
         userRepository.save(user);

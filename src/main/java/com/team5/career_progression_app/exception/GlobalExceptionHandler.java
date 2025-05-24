@@ -85,4 +85,20 @@ public class GlobalExceptionHandler {
                                 new ErrorResponse("skill_already_exists", ex.getMessage()),
                                 HttpStatus.CONFLICT);
         }
+
+        @ExceptionHandler(UserNotFoundException.class)
+        public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex, WebRequest request) {
+                return new ResponseEntity<>(
+                        new ErrorResponse("user_not_found", ex.getMessage()),
+                        HttpStatus.NOT_FOUND
+                );
+        }
+
+        @ExceptionHandler(RoleNotFoundException.class)
+        public ResponseEntity<ErrorResponse> handleRoleNotFoundException(RoleNotFoundException ex, WebRequest request) {
+                return new ResponseEntity<>(
+                        new ErrorResponse("role_not_found", ex.getMessage()),
+                        HttpStatus.NOT_FOUND
+                );
+        }
 }
