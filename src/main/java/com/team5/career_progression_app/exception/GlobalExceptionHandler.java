@@ -87,7 +87,7 @@ public class GlobalExceptionHandler {
                                 new ErrorResponse("skill_already_exists", ex.getMessage()),
                                 HttpStatus.CONFLICT);
         }
-
+       
         @ExceptionHandler(NoHandlerFoundException.class)
         public ResponseEntity<ErrorResponse> handleNoHandlerFoundException(NoHandlerFoundException ex, WebRequest request) {
                 return new ResponseEntity<>(
@@ -95,7 +95,7 @@ public class GlobalExceptionHandler {
                         HttpStatus.NOT_FOUND
                 );
         }
-
+       
         @ExceptionHandler(MethodArgumentNotValidException.class)
         public ResponseEntity<ErrorResponse> handleValidationErrors(MethodArgumentNotValidException ex) {
                 String message = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
@@ -104,4 +104,20 @@ public class GlobalExceptionHandler {
                         HttpStatus.BAD_REQUEST
                 );
         }
+                  
+        @ExceptionHandler(UserNotFoundException.class)
+        public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex, WebRequest request) {
+                return new ResponseEntity<>(
+                        new ErrorResponse("user_not_found", ex.getMessage()),
+                        HttpStatus.NOT_FOUND
+                );
+        }
+                  
+        @ExceptionHandler(RoleNotFoundException.class)
+        public ResponseEntity<ErrorResponse> handleRoleNotFoundException(RoleNotFoundException ex, WebRequest request) {
+                return new ResponseEntity<>(
+                        new ErrorResponse("role_not_found", ex.getMessage()),
+                        HttpStatus.NOT_FOUND
+                );
+        }             
 }
