@@ -8,7 +8,7 @@ import com.team5.career_progression_app.service.RolePermissionService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/role-permissions")
+@RequestMapping("/role-permissions")
 public class RolePermissionController {
 
     private final RolePermissionService rolePermissionService;

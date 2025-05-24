@@ -3,9 +3,11 @@ package com.team5.career_progression_app.exception;
 import com.team5.career_progression_app.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -85,7 +87,24 @@ public class GlobalExceptionHandler {
                                 new ErrorResponse("skill_already_exists", ex.getMessage()),
                                 HttpStatus.CONFLICT);
         }
-
+       
+        @ExceptionHandler(NoHandlerFoundException.class)
+        public ResponseEntity<ErrorResponse> handleNoHandlerFoundException(NoHandlerFoundException ex, WebRequest request) {
+                return new ResponseEntity<>(
+                        new ErrorResponse("not_found", "No handler found for " + ex.getRequestURL()),
+                        HttpStatus.NOT_FOUND
+                );
+        }
+       
+        @ExceptionHandler(MethodArgumentNotValidException.class)
+        public ResponseEntity<ErrorResponse> handleValidationErrors(MethodArgumentNotValidException ex) {
+                String message = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+                return new ResponseEntity<>(
+                        new ErrorResponse("validation_error", message),
+                        HttpStatus.BAD_REQUEST
+                );
+        }
+                  
         @ExceptionHandler(UserNotFoundException.class)
         public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex, WebRequest request) {
                 return new ResponseEntity<>(
@@ -93,12 +112,12 @@ public class GlobalExceptionHandler {
                         HttpStatus.NOT_FOUND
                 );
         }
-
+                  
         @ExceptionHandler(RoleNotFoundException.class)
         public ResponseEntity<ErrorResponse> handleRoleNotFoundException(RoleNotFoundException ex, WebRequest request) {
                 return new ResponseEntity<>(
                         new ErrorResponse("role_not_found", ex.getMessage()),
                         HttpStatus.NOT_FOUND
                 );
-        }
+        }             
 }
