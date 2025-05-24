@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/userPositions")
 public class UserPositionController {
 
     @Autowired
     private UserPositionService userPositionService;
 
-    @GetMapping("/userPositions")
+    @GetMapping
     public List<UserPositionDTO> getUserPositions(@RequestParam Integer userId) {
         return userPositionService.getUserPositionsForUser(userId);
     }

@@ -16,7 +16,7 @@ import com.team5.career_progression_app.dto.PositionDTO;
 import com.team5.career_progression_app.service.PositionService;
 
 @RestController
-@RequestMapping("/api/positions")
+@RequestMapping("/positions")
 public class PositionController {
     private final PositionService positionService;
 
