@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -72,7 +73,6 @@ public class UserService {
         return new ApiResponse<>(true, message, new UserDTO(user));
     }
 
-
     public List<UserDTO> getUsersWithFilters(Boolean active, String name) {
         List<User> filteredUsers = userRepository.filterUsers(active, name);
         return filteredUsers.stream()
@@ -80,6 +80,24 @@ public class UserService {
                 .toList();
     }
 
+    public List<UserDTO> getUsersByPositions(List<Integer> positionIds) {
+        List<User> users = userRepository.findByUserPositionsPositionIdIn(positionIds);
+        return users.stream().map(UserDTO::new).collect(Collectors.toList());
+    }
+
+    public List<UserDTO> getUsersByTeamIds(List<Integer> teamIds) {
+        List<User> users = userRepository.findUsersByTeamIds(teamIds);
+        return users.stream()
+                .map(UserDTO::new)
+                .toList();
+    }
+
+    public List<UserDTO> getUsers(List<Integer> positionIds, List<Integer> teamIds) {
+        List<User> users = userRepository.findUsersByFilters(positionIds, teamIds);
+        return users.stream()
+                .map(UserDTO::new)
+                .toList();
+    }
     public void updateUserRole(Integer userId, String roleName) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() ->  new UserNotFoundException(userId));

@@ -3,7 +3,6 @@ package com.team5.career_progression_app.restController;
 import com.team5.career_progression_app.dto.ApiResponse;
 import com.team5.career_progression_app.dto.UserDTO;
 import com.team5.career_progression_app.service.UserService;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,26 +11,34 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-
     private final UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<UserDTO>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
-    }
-
-    @GetMapping("/inactive")
-    public ResponseEntity<List<UserDTO>> getInactiveUsers() {
-        return ResponseEntity.ok(userService.getInactiveUsers());
+    @GetMapping
+    public List<UserDTO> getUsers(
+            @RequestParam(required = false) List<Integer> positionIds,
+            @RequestParam(required = false) List<Integer> teamIds) {
+        return userService.getUsers(positionIds, teamIds);
     }
 
     @GetMapping("/active")
-    public ResponseEntity<List<UserDTO>> getActiveUsers() {
-        return ResponseEntity.ok(userService.getActiveUsers());
+    public List<UserDTO> getActiveUsers() {
+        return userService.getActiveUsers();
+    }
+
+    @GetMapping("/inactive")
+    public List<UserDTO> getInactiveUsers() {
+        return userService.getInactiveUsers();
+    }
+
+    @GetMapping("/filter")
+    public List<UserDTO> getUsersWithFilters(
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(required = false) String name) {
+        return userService.getUsersWithFilters(active, name);
     }
 
     @PostMapping("/activate/{id}")
@@ -52,14 +59,6 @@ public class UserController {
         return token.startsWith("Bearer ") ? token.substring(7) : token;
     }
 
-    @GetMapping("/filter")
-    public ResponseEntity<List<UserDTO>> getUsersWithFilters(
-            @RequestParam(required = false) Boolean active,
-            @RequestParam(required = false) String name) {
-        
-        return ResponseEntity.ok(userService.getUsersWithFilters(active, name));
-    }
-
     @PatchMapping("/{id}/role")
     public ResponseEntity<?> updateUserRole(@PathVariable Integer id, @RequestBody String newRoleName) {
         userService.updateUserRole(id, newRoleName.toUpperCase());
@@ -71,5 +70,4 @@ public class UserController {
         userService.deleteUserRoleAndDeactivate(id);
         return ResponseEntity.ok("User role removed, reset to USER, and user deactivated.");
     }
-
 }

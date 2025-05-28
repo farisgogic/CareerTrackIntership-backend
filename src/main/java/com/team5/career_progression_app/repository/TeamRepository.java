@@ -9,8 +9,8 @@ import java.util.List;
 
 @Repository
 public interface TeamRepository extends JpaRepository<Team, Integer> {
-    @Query("SELECT t.name FROM Team t")
+    @Query("""
+        SELECT team.name FROM Team team
+        """)
     List<String> getAllTeamNames();
-
-
 }

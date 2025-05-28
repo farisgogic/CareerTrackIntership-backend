@@ -13,9 +13,10 @@ import java.util.List;
 @Repository
 public interface PermissionRepository extends JpaRepository<Permission, Integer> {
     Optional<Permission> findByNameIgnoreCase(String name);
+    
     @Query(value = """
-    SELECT name FROM Permission
-""")
+        SELECT permission.name FROM Permission permission
+        """)
     List<String> findAllPermissionNames();
 
     List<Permission> findByNameIn(List<String> permissionNames);

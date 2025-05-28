@@ -30,6 +30,7 @@ public class TemplateController {
     public List<TemplateDTO> getAllTemplates() {
         return this.templateService.getAllTemplates();
     }
+
     @GetMapping("/single/{id}")
     public TemplateDTO getTask(@PathVariable int id){
         return this.templateService.getTemplateById(id);

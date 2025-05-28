@@ -14,19 +14,44 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer>, 
     JpaSpecificationExecutor<User> {
-    @Query("SELECT u FROM User u WHERE LOWER(u.email) = LOWER(:email)")
+    @Query("""
+        SELECT user FROM User user 
+        WHERE LOWER(user.email) = LOWER(:email)
+        """)
     Optional<User> findByEmailIgnoreCase(@Param("email") String email);
     
     List<User> findByActiveFalse();
     List<User> findByActiveTrue();
 
     @Query(
-        value = """
-        SELECT * FROM users u
-        WHERE (:active IS NULL OR u.active = :active)
-        AND (:name IS NULL OR LOWER(u.first_name) LIKE LOWER(CONCAT('%', :name, '%')))
-        """,
-        nativeQuery = true
-    )
+            value = """
+        FROM User user
+        WHERE (:active IS NULL OR user.active = :active)
+        AND (:name IS NULL OR user.firstName = :name)
+        """)
     List<User> filterUsers(Boolean active,String name);
+
+    @Query("""
+        SELECT DISTINCT user FROM User user 
+        JOIN user.userPositions userPosition 
+        WHERE userPosition.position.id IN :positionIds
+        """)
+    List<User> findByUserPositionsPositionIdIn(@Param("positionIds") List<Integer> positionIds);
+
+    @Query("""
+        SELECT DISTINCT user FROM User user 
+        JOIN user.teamMemberships teamMembership 
+        WHERE teamMembership.team.id IN :teamIds
+        """)
+    List<User> findUsersByTeamIds(@Param("teamIds") List<Integer> teamIds);
+
+    @Query("""
+        SELECT DISTINCT user FROM User user 
+        LEFT JOIN user.userPositions userPosition 
+        LEFT JOIN user.teamMemberships teamMembership 
+        WHERE (:positionIds IS NULL OR userPosition.position.id IN :positionIds)
+        AND (:teamIds IS NULL OR teamMembership.team.id IN :teamIds)
+        """)
+    List<User> findUsersByFilters(@Param("positionIds") List<Integer> positionIds, 
+                                 @Param("teamIds") List<Integer> teamIds);
 }

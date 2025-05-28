@@ -1,13 +1,12 @@
 package com.team5.career_progression_app.restController;
 
-import com.team5.career_progression_app.dto.ApiResponse;
-import com.team5.career_progression_app.dto.PaginatedResponse;
-import com.team5.career_progression_app.dto.TaskDTO;
+import com.team5.career_progression_app.dto.*;
 import com.team5.career_progression_app.model.Status;
 import com.team5.career_progression_app.service.TaskService;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -45,4 +44,35 @@ public class TaskController {
         List<TaskDTO> tasks = taskService.getTasksForUserByStatus(userId, taskStatus);
         return new ApiResponse<>(true, "Tasks by status fetched successfully", tasks);
     }
+
+    @PostMapping("/assign")
+    public ResponseEntity<ApiResponse<String>> assignTaskToUsers(@RequestBody TaskAssignmentRequest request) {
+        taskService.assignTaskToUsers(request);
+        ApiResponse<String> response = new ApiResponse<>(true, "Tasks successfully assigned", "/tasks");
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/search")
+    public ApiResponse<PaginatedResponse<TaskDTO>> searchTasks(
+            @RequestParam(required = false) Integer userId,
+            @RequestParam(required = false) String teamName,
+            @RequestParam(required = false) Integer positionId,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Integer templateId,
+            @RequestParam(required = false) String searchQuery,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        TaskSearchRequest request = new TaskSearchRequest();
+        request.setUserId(userId);
+        request.setTeamName(teamName);
+        request.setPositionId(positionId);
+        request.setStatus(status);
+        request.setTemplateId(templateId);
+        request.setSearchQuery(searchQuery);
+
+        PaginatedResponse<TaskDTO> response = taskService.searchTasks(request, page, size);
+        return new ApiResponse<>(true, "Tasks fetched successfully", response);
+    }
+
 }
