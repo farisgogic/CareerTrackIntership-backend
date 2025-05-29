@@ -1,6 +1,8 @@
 package com.team5.career_progression_app.restController;
 
 import com.team5.career_progression_app.dto.ApiResponse;
+import com.team5.career_progression_app.dto.TeamDTO;
+import com.team5.career_progression_app.model.Team;
 import com.team5.career_progression_app.service.TeamService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +17,11 @@ public class TeamController {
 
     public TeamController(TeamService teamService) {
         this.teamService = teamService;
+    }
+
+    @GetMapping
+    public List<TeamDTO> getTeams() {
+        return teamService.getTeams();
     }
 
     @GetMapping("/names")

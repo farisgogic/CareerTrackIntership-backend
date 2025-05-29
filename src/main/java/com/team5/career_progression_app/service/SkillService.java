@@ -29,6 +29,12 @@ public class SkillService {
         this.tagRepository = tagRepository;
     }
 
+    public List<SkillDTO> getAllSkills() {
+    return skillRepository.findAll().stream()
+            .map(this::convertToSkillDTO)
+            .toList();
+}
+
     public List<SkillTypeDTO> getAllSkillTypes() {
         return skillTypeRepository.findAll().stream()
                 .map(this::convertToSkillTypeDTO).toList();

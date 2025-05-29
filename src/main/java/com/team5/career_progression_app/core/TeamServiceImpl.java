@@ -1,5 +1,8 @@
 package com.team5.career_progression_app.core;
 
+import com.team5.career_progression_app.dto.TeamDTO;
+import com.team5.career_progression_app.dto.UserDTO;
+import com.team5.career_progression_app.model.Team;
 import com.team5.career_progression_app.repository.TeamRepository;
 import com.team5.career_progression_app.service.TeamService;
 import org.springframework.stereotype.Service;
@@ -13,6 +16,13 @@ public class TeamServiceImpl implements TeamService {
 
     public TeamServiceImpl(TeamRepository teamRepository) {
         this.teamRepository = teamRepository;
+    }
+
+    @Override
+    public List<TeamDTO> getTeams() {
+        return teamRepository.findAll().stream()
+                .map(TeamDTO::new)
+                .toList();
     }
 
     @Override

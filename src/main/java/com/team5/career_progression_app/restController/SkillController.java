@@ -16,6 +16,11 @@ public class SkillController {
         this.skillService = skillService;
     }
 
+    @GetMapping
+    public List<SkillDTO> getAllSkills() {
+        return skillService.getAllSkills();
+    }
+
     @GetMapping("/types")
     public List<SkillTypeDTO> getAllSkillTypes() {
         return skillService.getAllSkillTypes();

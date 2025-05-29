@@ -36,4 +36,8 @@ public class Team {
                 ", leadId=" + lead.getId() +
                 '}';
     }
+
+    public Team(Integer id) {
+        this.id = id;
+    }
 }

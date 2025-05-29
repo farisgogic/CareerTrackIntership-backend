@@ -65,6 +65,18 @@ public class UserController {
         return ResponseEntity.ok("User role updated successfully.");
     }
 
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Integer userId) {
+        UserDTO userDTO = userService.getUserById(userId);
+        return ResponseEntity.ok(userDTO);
+    }
+
+    @PostMapping("/{userId}/feedback")
+    public ResponseEntity<String> saveFeedback(@PathVariable Integer userId, @RequestBody String feedback) {
+        String response = userService.saveFeedback(userId, feedback);
+        return ResponseEntity.ok(response);
+    }
+
     @DeleteMapping("/{id}/role")
     public ResponseEntity<?> deleteUserRole(@PathVariable Integer id) {
         userService.deleteUserRoleAndDeactivate(id);

@@ -18,6 +18,9 @@ public class PromotionRequest {
     @Column(name = "id")
     private Integer id;
 
+    @Column(name = "message")
+    private String message;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private PromotionStatus status;

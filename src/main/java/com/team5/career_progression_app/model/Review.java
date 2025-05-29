@@ -31,6 +31,10 @@ public class Review {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "reviewer_id")
+    private User reviewer;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -50,6 +54,7 @@ public class Review {
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", userId=" + user.getId() +
+                ", reviewerId=" + reviewer.getId() +
                 '}';
     }
 }

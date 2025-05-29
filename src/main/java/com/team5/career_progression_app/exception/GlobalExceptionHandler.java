@@ -11,7 +11,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-        
+
         @ExceptionHandler(Exception.class)
         public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex, WebRequest request) {
                 return new ResponseEntity<>(new ErrorResponse(
@@ -86,6 +86,19 @@ public class GlobalExceptionHandler {
                 return new ResponseEntity<>(
                                 new ErrorResponse("skill_already_exists", ex.getMessage()),
                                 HttpStatus.CONFLICT);
+        }
+
+        @ExceptionHandler(UnauthorizedException.class)
+        public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException ex, WebRequest request) {
+                return new ResponseEntity<>(new ErrorResponse(
+                                "unauthorized", ex.getMessage()), HttpStatus.FORBIDDEN);
+        }
+
+        @ExceptionHandler(UserAlreadyInTeamException.class)
+        public ResponseEntity<ErrorResponse> handleUserAlreadyInTeamException(UserAlreadyInTeamException ex,
+                        WebRequest request) {
+                return new ResponseEntity<>(new ErrorResponse(
+                                "user_already_in_team", ex.getMessage()), HttpStatus.CONFLICT);
         }
        
         @ExceptionHandler(NoHandlerFoundException.class)

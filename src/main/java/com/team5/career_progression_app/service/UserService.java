@@ -7,11 +7,13 @@ import com.team5.career_progression_app.exception.ResourceNotFoundException;
 import com.team5.career_progression_app.exception.RoleNotFoundException;
 import com.team5.career_progression_app.exception.UserNotFoundException;
 import com.team5.career_progression_app.model.Permission;
-import com.team5.career_progression_app.model.Role;
+import com.team5.career_progression_app.model.Review;
 import com.team5.career_progression_app.model.User;
 import com.team5.career_progression_app.repository.PermissionRepository;
-import com.team5.career_progression_app.repository.RoleRepository;
+import com.team5.career_progression_app.repository.ReviewRepository;
 import com.team5.career_progression_app.repository.UserRepository;
+import com.team5.career_progression_app.model.Role;
+import com.team5.career_progression_app.repository.RoleRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PermissionRepository permissionRepository;
     private final JwtService jwtService;
+    private final ReviewRepository reviewRepository;
     private final RoleRepository roleRepository;
 
     public List<UserDTO> getAllUsers() {
@@ -80,6 +83,25 @@ public class UserService {
                 .toList();
     }
 
+    public UserDTO getUserById(Integer userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return new UserDTO(user);
+    }
+
+    public String saveFeedback(Integer userId, String feedback) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        Review review = new Review();
+        review.setFeedback(feedback);
+        review.setUser(user);
+
+        reviewRepository.save(review);
+
+        return "Feedback saved successfully";
+    }
+  
     public List<UserDTO> getUsersByPositions(List<Integer> positionIds) {
         List<User> users = userRepository.findByUserPositionsPositionIdIn(positionIds);
         return users.stream().map(UserDTO::new).collect(Collectors.toList());
