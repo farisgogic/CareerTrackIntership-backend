@@ -132,5 +132,14 @@ public class GlobalExceptionHandler {
                         new ErrorResponse("role_not_found", ex.getMessage()),
                         HttpStatus.NOT_FOUND
                 );
-        }             
+        }
+
+        @ExceptionHandler(ForbiddenRoleAssignmentException.class)
+        public ResponseEntity<ErrorResponse> handleForbiddenRoleAssignmentException(
+                ForbiddenRoleAssignmentException ex, WebRequest request) {
+                return new ResponseEntity<>(
+                        new ErrorResponse("forbidden_role_assignment", ex.getMessage()),
+                        HttpStatus.FORBIDDEN
+                );
+        }
 }

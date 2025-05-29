@@ -2,10 +2,7 @@ package com.team5.career_progression_app.service;
 
 import com.team5.career_progression_app.dto.ApiResponse;
 import com.team5.career_progression_app.dto.UserDTO;
-import com.team5.career_progression_app.exception.AccessDeniedException;
-import com.team5.career_progression_app.exception.ResourceNotFoundException;
-import com.team5.career_progression_app.exception.RoleNotFoundException;
-import com.team5.career_progression_app.exception.UserNotFoundException;
+import com.team5.career_progression_app.exception.*;
 import com.team5.career_progression_app.model.Permission;
 import com.team5.career_progression_app.model.Review;
 import com.team5.career_progression_app.model.User;
@@ -121,6 +118,10 @@ public class UserService {
                 .toList();
     }
     public void updateUserRole(Integer userId, String roleName) {
+        if ("ADMIN".equalsIgnoreCase(roleName)) {
+            throw new ForbiddenRoleAssignmentException(roleName);
+        }
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() ->  new UserNotFoundException(userId));
 
