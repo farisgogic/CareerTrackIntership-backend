@@ -134,6 +134,10 @@ public class NotificationService {
         createNotification(recipient, "Alert: " + alertDetails, "Alert", NotificationType.ALERT);
     }
 
+    public void notifyTaskDeleted(User recipient, String taskDetails) {
+        createNotification(recipient, "Task Deleted: " + taskDetails, "Task deleted", NotificationType.TASK);
+    }
+
     private void createNotification(User recipient, String message, String title, NotificationType type) {
         Notification notification = new Notification();
         notification.setRecipient(recipient);

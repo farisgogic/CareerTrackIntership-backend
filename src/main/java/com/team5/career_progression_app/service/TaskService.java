@@ -1,9 +1,7 @@
 package com.team5.career_progression_app.service;
 
-import com.team5.career_progression_app.dto.PaginatedResponse;
-import com.team5.career_progression_app.dto.TaskAssignmentRequest;
-import com.team5.career_progression_app.dto.TaskDTO;
-import com.team5.career_progression_app.dto.TaskSearchRequest;
+import com.team5.career_progression_app.dto.*;
+import com.team5.career_progression_app.exception.InvalidRequestException;
 import com.team5.career_progression_app.exception.ResourceNotFoundException;
 import com.team5.career_progression_app.exception.DuplicateAssignmentException;
 import com.team5.career_progression_app.model.*;
@@ -133,4 +131,78 @@ public class TaskService {
         );
     }
 
+    public void deleteTask(Integer taskId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + taskId));
+
+        User assignedUser = task.getAssignedTo();
+
+        List<Task> tasksBefore = taskRepository.findByAssignedToId(assignedUser.getId());
+        int totalBefore = tasksBefore.size();
+        long completedBefore = tasksBefore.stream()
+                .filter(t -> t.getStatus() == DONE)
+                .count();
+        double progressBefore = totalBefore > 0 ? (double) completedBefore / totalBefore : 0.0;
+
+        taskRepository.delete(task);
+
+        List<Task> tasksAfter = taskRepository.findByAssignedToId(assignedUser.getId());
+        int totalAfter = tasksAfter.size();
+        long completedAfter = tasksAfter.stream()
+                .filter(t -> t.getStatus() == DONE)
+                .count();
+        double progressAfter = totalAfter > 0 ? (double) completedAfter / totalAfter : 0.0;
+
+        if (progressBefore > 0.5 && progressAfter <= 0.5) {
+            notificationService.notifyTaskDeleted(
+                assignedUser,
+                "Task \"" + task.getTitle() + "\" has been deleted. Your task progress has dropped below 50% after task deletion. Current progress: " +
+                String.format("%.1f%%", progressAfter * 100)
+            );
+        } else {
+            notificationService.notifyTaskDeleted(
+                assignedUser,
+                "Task \"" + task.getTitle() + "\" has been deleted. Your new progress is: " +
+                String.format("%.1f%%", progressAfter * 100)
+            );
+        }
+    }
+
+    public TaskDTO getTaskDetails(Integer taskId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + taskId));
+        return new TaskDTO(task);
+    }
+
+    public TaskDTO updateTask(Integer taskId, TaskUpdateRequest request) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + taskId));
+
+        if (request.getTemplateId() == null || request.getDescription() == null || request.getDescription().trim().isEmpty()) {
+            throw new InvalidRequestException("Template ID and description are required");
+        }
+
+        TaskTemplate template = taskTemplateRepository.findById(request.getTemplateId())
+                .orElseThrow(() -> new ResourceNotFoundException("Template not found with id: " + request.getTemplateId()));
+
+        Task existingTask = taskRepository.findTaskByFilter(task.getAssignedTo().getId(), request.getTemplateId());
+        
+        if (existingTask != null && !existingTask.getId().equals(taskId)) {
+            existingTask.setTitle(task.getTitle());
+            existingTask.setDescription(request.getDescription());
+            if (existingTask.getStatus() == Status.DONE) {
+                existingTask.setStatus(Status.TODO);
+            }
+            Task updatedTask = taskRepository.save(existingTask);
+            
+            taskRepository.delete(task);
+            
+            return new TaskDTO(updatedTask);
+        } else {
+            task.setTemplate(template);
+            task.setDescription(request.getDescription());
+            Task updatedTask = taskRepository.save(task);
+            return new TaskDTO(updatedTask);
+        }
+    }
 }

@@ -75,4 +75,24 @@ public class TaskController {
         return new ApiResponse<>(true, "Tasks fetched successfully", response);
     }
 
+    @DeleteMapping("/delete/{taskId}")
+    public ResponseEntity<ApiResponse<String>> deleteTask(@PathVariable Integer taskId) {
+        taskService.deleteTask(taskId);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Task deleted successfully", null));
+    }
+
+    @GetMapping("/{taskId}")
+    public ApiResponse<TaskDTO> getTaskDetails(@PathVariable Integer taskId) {
+        TaskDTO task = taskService.getTaskDetails(taskId);
+        return new ApiResponse<>(true, "Task details fetched successfully", task);
+    }
+
+    @PutMapping("/edit/{taskId}")
+    public ResponseEntity<ApiResponse<TaskDTO>> updateTask(
+            @PathVariable Integer taskId,
+            @RequestBody TaskUpdateRequest request) {
+        TaskDTO updatedTask = taskService.updateTask(taskId, request);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Task updated successfully", updatedTask));
+    }
+
 }
