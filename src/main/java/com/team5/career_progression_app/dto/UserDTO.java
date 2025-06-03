@@ -1,10 +1,7 @@
 package com.team5.career_progression_app.dto;
 
 import com.team5.career_progression_app.model.User;
-
-import com.team5.career_progression_app.model.UserSkill;
 import lombok.*;
-
 import java.util.List;
 
 @Data
