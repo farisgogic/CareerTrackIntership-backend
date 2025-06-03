@@ -1,8 +1,8 @@
 package com.team5.career_progression_app.restController;
 
+import com.team5.career_progression_app.core.TeamServiceImpl;
 import com.team5.career_progression_app.dto.ApiResponse;
 import com.team5.career_progression_app.dto.TeamDTO;
-import com.team5.career_progression_app.model.Team;
 import com.team5.career_progression_app.service.TeamService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +15,7 @@ import java.util.List;
 public class TeamController {
     private final TeamService teamService;
 
-    public TeamController(TeamService teamService) {
+    public TeamController(TeamService teamService, TeamServiceImpl teamServiceImpl) {
         this.teamService = teamService;
     }
 
@@ -29,6 +29,8 @@ public class TeamController {
         List<String> teamNames = teamService.getAllTeamNames();
         return new ApiResponse<>(true, "Team names fetched successfully", teamNames);
     }
+
+
 }
 
 

@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,11 +19,18 @@ public class UserSkillDTO {
     private Integer skillId;
     private String skillName;
     private String level;
+    private SkillTypeDTO type;
+    private List<TagDTO> tags;
 
     public UserSkillDTO(UserSkill userSkill) {
         this.userId = userSkill.getUser().getId();
         this.skillId = userSkill.getSkill().getId();
         this.skillName = userSkill.getSkill().getName();
         this.level = userSkill.getLevel();
+        this.type = new SkillTypeDTO(userSkill.getSkill().getSkillType());
+        this.tags = userSkill.getSkill().getTags()
+                .stream()
+                .map(TagDTO::new)
+                .toList();
     }
 }
