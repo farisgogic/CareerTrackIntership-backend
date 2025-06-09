@@ -23,6 +23,11 @@ public class TeamMembership {
     @JoinColumn(name = "team_id")
     private Team team;
 
+    public TeamMembership(Team team, User user) {
+        this.team = team;
+        this.user = user;
+    }
+
     @Override
     public String toString() {
         return "TeamMembership{" +

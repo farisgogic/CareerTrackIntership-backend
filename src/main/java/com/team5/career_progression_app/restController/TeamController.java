@@ -1,20 +1,22 @@
 package com.team5.career_progression_app.restController;
 
-import com.team5.career_progression_app.core.TeamServiceImpl;
 import com.team5.career_progression_app.dto.ApiResponse;
 import com.team5.career_progression_app.dto.TeamDTO;
 import com.team5.career_progression_app.service.TeamService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/teams")
+@Validated
 public class TeamController {
     private final TeamService teamService;
 
-    public TeamController(TeamService teamService, TeamServiceImpl teamServiceImpl) {
+    public TeamController(TeamService teamService) {
         this.teamService = teamService;
     }
 
@@ -29,6 +31,17 @@ public class TeamController {
         return new ApiResponse<>(true, "Team names fetched successfully", teamNames);
     }
 
+    @PostMapping("/add")
+    public ApiResponse<TeamDTO> addTeam(@Valid  @RequestBody TeamDTO teamDTO) {
+        TeamDTO createdTeam = teamService.createTeam(teamDTO);
+        return new ApiResponse<>(true, "New team created successfully", createdTeam);
+    }
+
+    @DeleteMapping("/delete/{teamId}")
+    public ResponseEntity<ApiResponse<Void>> deleteTeam(@PathVariable Integer teamId) {
+        teamService.deleteTeam(teamId);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Team deleted successfully", null));
+    }
 
 }
 

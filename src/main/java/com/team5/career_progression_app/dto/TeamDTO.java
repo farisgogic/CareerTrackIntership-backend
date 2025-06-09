@@ -3,6 +3,8 @@ package com.team5.career_progression_app.dto;
 import com.team5.career_progression_app.model.Team;
 import com.team5.career_progression_app.model.TeamMembership;
 import com.team5.career_progression_app.model.User;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -14,7 +16,9 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class TeamDTO {
     private Integer id;
+    @NotBlank(message = "Team name must not be blank")
     private String name;
+    @NotNull(message = "Lead ID must not be null")
     private Integer leadId;
     private String leadName;
     private List<UserDTO> members;
@@ -32,9 +36,11 @@ public class TeamDTO {
         this.leadName = team.getLead().getFirstName() + " " + team.getLead().getLastName();
         this.members = new ArrayList<>();
         this.members.add(new UserDTO(team.getLead()));
-        for (TeamMembership membership : team.getMemberships()) {
-            User member = membership.getUser();
+        if (team.getMemberships() != null) {
+            for (TeamMembership membership : team.getMemberships()) {
+                User member = membership.getUser();
                 this.members.add(new UserDTO(member));
+            }
         }
     }
 }

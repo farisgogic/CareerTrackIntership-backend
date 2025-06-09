@@ -1,5 +1,6 @@
 package com.team5.career_progression_app.repository;
 
+import com.team5.career_progression_app.model.Team;
 import com.team5.career_progression_app.model.TeamMembership;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,8 @@ public interface TeamMembershipRepository extends JpaRepository<TeamMembership, 
 
     @Query("SELECT tm FROM TeamMembership tm JOIN FETCH tm.team WHERE tm.user.id = :userId")
     List<TeamMembership> findMembershipsWithTeamsByUserId(@Param("userId") Integer userId);
+
+    void deleteAllByTeam(Team team);
 
     boolean existsByUserIdAndTeamId(Integer userId, Integer teamId);
 }
