@@ -71,5 +71,11 @@ public class TeamServiceImpl implements TeamService {
         teamMembershipRepository.deleteAllByTeam(team);
         teamRepository.delete(team);
     }
+
+    @Override
+    public TeamDTO getTeamById(Integer teamId) {
+        Team team = teamRepository.findById(teamId).orElseThrow(() -> new ResourceNotFoundException("Team not found"));
+        return new TeamDTO(team);
+    }
 } 
 

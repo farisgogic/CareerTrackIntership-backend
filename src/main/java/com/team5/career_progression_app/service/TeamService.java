@@ -11,4 +11,5 @@ public interface TeamService {
 
     TeamDTO createTeam(TeamDTO teamDTO);
     void deleteTeam(Integer teamId);
+    TeamDTO getTeamById(Integer teamId);
 }

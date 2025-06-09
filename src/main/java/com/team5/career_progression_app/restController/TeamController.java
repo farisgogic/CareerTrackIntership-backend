@@ -25,6 +25,11 @@ public class TeamController {
         return teamService.getTeams();
     }
 
+    @GetMapping("/{teamId}")
+    public TeamDTO getTeamById(@PathVariable int teamId) {
+        return teamService.getTeamById(teamId);
+    }
+
     @GetMapping("/names")
     public ApiResponse<List<String>> getAllTeamNames() {
         List<String> teamNames = teamService.getAllTeamNames();
@@ -35,6 +40,12 @@ public class TeamController {
     public ApiResponse<TeamDTO> addTeam(@Valid  @RequestBody TeamDTO teamDTO) {
         TeamDTO createdTeam = teamService.createTeam(teamDTO);
         return new ApiResponse<>(true, "New team created successfully", createdTeam);
+    }
+    @PutMapping("/update/{teamId}")
+    public ApiResponse<TeamDTO> editTeam(@PathVariable int teamId, @Valid @RequestBody TeamDTO teamDTO) {
+        teamService.deleteTeam(teamId);
+        TeamDTO updatedTeam = teamService.createTeam(teamDTO);
+        return new ApiResponse<>(true, "Team updated successfully", updatedTeam);
     }
 
     @DeleteMapping("/delete/{teamId}")
