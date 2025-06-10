@@ -7,6 +7,7 @@ import com.team5.career_progression_app.exception.NotificationNotFoundException;
 import com.team5.career_progression_app.model.Notification;
 import com.team5.career_progression_app.model.NotificationFilter;
 import com.team5.career_progression_app.model.NotificationType;
+import com.team5.career_progression_app.model.NotificationEventType;
 import com.team5.career_progression_app.model.User;
 import com.team5.career_progression_app.repository.NotificationRepository;
 import org.springframework.stereotype.Service;
@@ -106,36 +107,44 @@ public class NotificationService {
         notificationRepository.saveAll(notifications);
     }
 
-    public void notifyTaskReceived(User recipient, String taskDetails) {
-        createNotification(recipient, "Task Received: " + taskDetails, "Task received", NotificationType.TASK);
+    public void notifyTaskReceived(User recipient, String taskName) {
+        createNotification(recipient, "You have been assigned a new task: " + taskName + ".", NotificationEventType.TASK_RECEIVED.getDescription(), NotificationType.TASK);
     }
 
-    public void notifyTaskFinished(User lead, String taskDetails) {
-        createNotification(lead, "Task Finished: " + taskDetails, "Task finished", NotificationType.TASK);
+    public void notifyTaskFinished(User lead, String taskName) {
+        createNotification(lead, "Task '" + taskName + "' has been marked as finished.", NotificationEventType.TASK_FINISHED.getDescription(), NotificationType.TASK);
     }
 
-    public void notifyFeedbackReceived(User recipient, String feedbackDetails) {
-        createNotification(recipient, "Feedback Received: " + feedbackDetails, "Feedback received", NotificationType.FEEDBACK);
+    public void notifyFeedbackReceived(User recipient, String feedbackSummary) {
+        createNotification(recipient, "You have received new feedback: '" + feedbackSummary + "'.", NotificationEventType.FEEDBACK_RECEIVED.getDescription(), NotificationType.FEEDBACK);
     }
 
-    public void notifyTaskChanged(User recipient, String taskDetails) {
-        createNotification(recipient, "Task Changed: " + taskDetails, "Task changed", NotificationType.TASK);
+    public void notifyTaskChanged(User recipient, String taskName) {
+        createNotification(recipient, "Task '" + taskName + "' has been updated. Check the details for changes.", NotificationEventType.TASK_CHANGED.getDescription(), NotificationType.TASK);
     }
 
-    public void notifyPromotionReceived(User recipient, String promotionDetails) {
-        createNotification(recipient, "Promotion Received: " + promotionDetails, "Promotion", NotificationType.PROMOTION);
+    public void notifyPromotionReceived(User recipient, String newPosition) {
+        createNotification(recipient, "Congratulations! You have been promoted to " + newPosition + ".", NotificationEventType.PROMOTION.getDescription(), NotificationType.PROMOTION);
     }
 
     public void notifyError(User recipient, String errorDetails) {
-        createNotification(recipient, "Error: " + errorDetails, "Error", NotificationType.ERROR);
+        createNotification(recipient, "An error occurred: " + errorDetails, NotificationEventType.ERROR.getDescription(), NotificationType.ERROR);
     }
 
     public void notifyAlert(User recipient, String alertDetails) {
-        createNotification(recipient, "Alert: " + alertDetails, "Alert", NotificationType.ALERT);
+        createNotification(recipient, alertDetails, NotificationEventType.ALERT.getDescription(), NotificationType.ALERT);
     }
 
-    public void notifyTaskDeleted(User recipient, String taskDetails) {
-        createNotification(recipient, "Task Deleted: " + taskDetails, "Task deleted", NotificationType.TASK);
+    public void notifyTaskDeleted(User recipient, String taskName, String progress) {
+        createNotification(recipient, "Task '" + taskName + "' has been deleted. Your new progress is: " + progress + ".", NotificationEventType.TASK_DELETED.getDescription(), NotificationType.TASK);
+    }
+
+    public void notifyRoleChanged(User recipient, String roleName) {
+        createNotification(recipient, "Your role has been changed to " + roleName + ".", NotificationEventType.ROLE_CHANGED.getDescription(), NotificationType.ALERT);
+    }
+
+    public void notifyRoleDeleted(User recipient, String roleName) {
+        createNotification(recipient, "Your role '" + roleName + "' has been removed.", NotificationEventType.ROLE_DELETED.getDescription(), NotificationType.ALERT);
     }
 
     private void createNotification(User recipient, String message, String title, NotificationType type) {

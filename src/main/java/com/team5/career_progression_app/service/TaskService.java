@@ -92,7 +92,7 @@ public class TaskService {
                 task.setStatus(Status.TODO);
                 taskRepository.save(task);
 
-                notificationService.notifyTaskReceived(user,"You have been assigned a new task: " + task.getTitle());
+                notificationService.notifyTaskReceived(user, task.getTitle());
             }
         }
     }
@@ -153,19 +153,11 @@ public class TaskService {
                 .count();
         double progressAfter = totalAfter > 0 ? (double) completedAfter / totalAfter : 0.0;
 
-        if (progressBefore > 0.5 && progressAfter <= 0.5) {
-            notificationService.notifyTaskDeleted(
-                assignedUser,
-                "Task \"" + task.getTitle() + "\" has been deleted. Your task progress has dropped below 50% after task deletion. Current progress: " +
-                String.format("%.1f%%", progressAfter * 100)
-            );
-        } else {
-            notificationService.notifyTaskDeleted(
-                assignedUser,
-                "Task \"" + task.getTitle() + "\" has been deleted. Your new progress is: " +
-                String.format("%.1f%%", progressAfter * 100)
-            );
-        }
+        notificationService.notifyTaskDeleted(
+            assignedUser,
+            task.getTitle(),
+            String.format("%.1f%%", progressAfter * 100)
+        );
     }
 
     public TaskDTO getTaskDetails(Integer taskId) {

@@ -26,6 +26,7 @@ public class UserService {
     private final JwtService jwtService;
     private final ReviewRepository reviewRepository;
     private final RoleRepository roleRepository;
+    private final NotificationService notificationService;
 
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream()
@@ -129,6 +130,7 @@ public class UserService {
                 .orElseThrow(() -> new RoleNotFoundException(roleName));
 
         user.setRole(role);
+        notificationService.notifyRoleChanged(user, role.getName());
         userRepository.save(user);
     }
 
