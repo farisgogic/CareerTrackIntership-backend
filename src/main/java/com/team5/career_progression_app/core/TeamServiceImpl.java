@@ -10,24 +10,21 @@ import com.team5.career_progression_app.repository.TeamMembershipRepository;
 import com.team5.career_progression_app.repository.TeamRepository;
 import com.team5.career_progression_app.repository.UserRepository;
 import com.team5.career_progression_app.service.TeamService;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Service
+@AllArgsConstructor
 public class TeamServiceImpl implements TeamService {
 
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
     private final TeamMembershipRepository teamMembershipRepository;
-
-    public TeamServiceImpl(TeamRepository teamRepository, UserRepository userRepository, TeamMembershipRepository teamMembershipRepository) {
-        this.teamRepository = teamRepository;
-        this.userRepository = userRepository;
-        this.teamMembershipRepository = teamMembershipRepository;
-    }
 
     @Override
     public List<TeamDTO> getTeams() {
@@ -46,9 +43,6 @@ public class TeamServiceImpl implements TeamService {
         User teamLead = userRepository.findById(teamDTO.getLeadId()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Team team = new Team();
-        team.setName(teamDTO.getName());
-        team.setLead(teamLead);
-        team = teamRepository.save(team);
 
         List<TeamMembership> memberships = new ArrayList<>();
 
@@ -59,6 +53,9 @@ public class TeamServiceImpl implements TeamService {
             }
         }
 
+        team.setName(teamDTO.getName());
+        team.setLead(teamLead);
+        team = teamRepository.save(team);
         teamMembershipRepository.saveAll(memberships);
 
         return new TeamDTO(team);
