@@ -1,10 +1,12 @@
 package com.team5.career_progression_app.dto;
 
 import com.team5.career_progression_app.model.Skill;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -12,15 +14,19 @@ import lombok.Setter;
 public class SkillDTO {
     private Integer id;
     private String name;
-    private Integer skillTypeId;
-    private String skillTypeName;
+    private SkillTypeDTO type;
+    private List<TagDTO> tags;
 
     public SkillDTO(Skill skill) {
         this.id = skill.getId();
         this.name = skill.getName();
         if (skill.getSkillType() != null) {
-            this.skillTypeId = skill.getSkillType().getId();
-            this.skillTypeName = skill.getSkillType().getName();
+            this.type = new SkillTypeDTO(skill.getSkillType());
+        }
+        if (skill.getTags() != null) {
+            this.tags = skill.getTags().stream()
+                    .map(TagDTO::new)
+                    .collect(Collectors.toList());
         }
     }
 }

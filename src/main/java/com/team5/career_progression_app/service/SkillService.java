@@ -15,82 +15,179 @@ public class SkillService {
 
     private final SkillRepository skillRepository;
     private final SkillTypeRepository skillTypeRepository;
-    private final TemplateSkillRepository templateSkillRepository;
-    private final UserSkillRepository userSkillRepository;
     private final TagRepository tagRepository;
+    private final TemplateSkillRepository templateSkillRepository;
+    private final TaskTemplateRepository taskTemplateRepository;
+    private final UserSkillRepository userSkillRepository;
 
-    public SkillService(SkillRepository skillRepository, SkillTypeRepository skillTypeRepository,
-            TemplateSkillRepository templateSkillRepository, UserSkillRepository userSkillRepository,
-            TagRepository tagRepository) {
+    public SkillService(SkillRepository skillRepository, 
+                       SkillTypeRepository skillTypeRepository,
+                       TagRepository tagRepository,
+                       TemplateSkillRepository templateSkillRepository,
+                       TaskTemplateRepository taskTemplateRepository,
+                       UserSkillRepository userSkillRepository) {
         this.skillRepository = skillRepository;
         this.skillTypeRepository = skillTypeRepository;
-        this.templateSkillRepository = templateSkillRepository;
-        this.userSkillRepository = userSkillRepository;
         this.tagRepository = tagRepository;
+        this.templateSkillRepository = templateSkillRepository;
+        this.taskTemplateRepository = taskTemplateRepository;
+        this.userSkillRepository = userSkillRepository;
     }
 
     public List<SkillDTO> getAllSkills() {
-    return skillRepository.findAll().stream()
-            .map(this::convertToSkillDTO)
-            .toList();
-}
-
-    public List<SkillTypeDTO> getAllSkillTypes() {
-        return skillTypeRepository.findAll().stream()
-                .map(this::convertToSkillTypeDTO).toList();
-    }
-
-    public SkillTypeDTO createSkillType(SkillTypeDTO skillTypeDTO) {
-        SkillType skillType = new SkillType();
-        skillType.setName(skillTypeDTO.getName());
-        SkillType saved = skillTypeRepository.save(skillType);
-        return convertToSkillTypeDTO(saved);
+        return skillRepository.findAll().stream()
+                .map(SkillDTO::new)
+                .toList();
     }
 
     public List<SkillDTO> getSkillsByType(Integer skillTypeId) {
         return skillRepository.findBySkillTypeId(skillTypeId).stream()
-                .map(this::convertToSkillDTO).toList();
+                .map(SkillDTO::new)
+                .toList();
     }
 
-    public SkillDTO createSkill(SkillDTO skillDTO) {
-        SkillType skillType = skillTypeRepository.findById(skillDTO.getSkillTypeId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Skill-Type with ID " + skillDTO.getSkillTypeId() + " not found"));
+    public SkillDTO createSkill(SkillCreateDTO skillCreateDTO) {
+        Skill skill = new Skill();
+        skill.setName(skillCreateDTO.getName());
 
-        if (skillRepository.existsByNameAndSkillTypeId(skillDTO.getName(), skillDTO.getSkillTypeId())) {
-            throw new SkillAlreadyExistsException("Skill " + skillDTO.getName() + " already exists in this category");
+        if (skillCreateDTO.getTypeId() != null) {
+            SkillType skillType = skillTypeRepository.findById(skillCreateDTO.getTypeId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Skill-Type with ID " + skillCreateDTO.getTypeId() + " not found"));
+            skill.setSkillType(skillType);
+
+            if (skillRepository.existsByNameAndSkillTypeId(skillCreateDTO.getName(), skillCreateDTO.getTypeId())) {
+                throw new SkillAlreadyExistsException("Skill " + skillCreateDTO.getName() + " already exists in this category");
+            }
         }
 
-        Skill skill = new Skill();
-        skill.setName(skillDTO.getName());
-        skill.setSkillType(skillType);
+        if (skillCreateDTO.getTagIds() != null && !skillCreateDTO.getTagIds().isEmpty()) {
+            List<Tag> tags = skillCreateDTO.getTagIds().stream()
+                    .map(tagId -> tagRepository.findById(tagId)
+                            .orElseThrow(() -> new ResourceNotFoundException("Tag not found with id: " + tagId)))
+                    .toList();
+            skill.setTags(tags);
+        }
+
         Skill saved = skillRepository.save(skill);
-        return convertToSkillDTO(saved);
+        return new SkillDTO(saved);
+    }
+
+    public SkillDTO updateSkill(Integer id, SkillCreateDTO skillCreateDTO) {
+        Skill skill = skillRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Skill not found with id: " + id));
+
+        skill.setName(skillCreateDTO.getName());
+
+        if (skillCreateDTO.getTypeId() != null) {
+            SkillType skillType = skillTypeRepository.findById(skillCreateDTO.getTypeId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Skill-Type with ID " + skillCreateDTO.getTypeId() + " not found"));
+            skill.setSkillType(skillType);
+        }
+
+        if (skillCreateDTO.getTagIds() != null) {
+            List<Tag> tags = skillCreateDTO.getTagIds().stream()
+                    .map(tagId -> tagRepository.findById(tagId)
+                            .orElseThrow(() -> new ResourceNotFoundException("Tag not found with id: " + tagId)))
+                    .toList();
+            skill.setTags(tags);
+        }
+
+        Skill saved = skillRepository.save(skill);
+        return new SkillDTO(saved);
+    }
+
+    public void deleteSkill(Integer id) {
+        Skill skill = skillRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Skill not found with id: " + id));
+        skillRepository.delete(skill);
+    }
+
+    public List<TagDTO> getAllTags() {
+        return tagRepository.findAll().stream()
+                .map(TagDTO::new)
+                .toList();
+    }
+
+    public TagDTO createTag(TagDTO tagDTO) {
+        if (tagRepository.existsByName(tagDTO.getName())) {
+            throw new ResourceNotFoundException("Tag already exists");
+        }
+
+        Tag tag = new Tag();
+        tag.setName(tagDTO.getName());
+        Tag saved = tagRepository.save(tag);
+        return new TagDTO(saved);
+    }
+
+    public TagDTO updateTag(Integer id, TagDTO tagDTO) {
+        Tag tag = tagRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tag not found with id: " + id));
+        tag.setName(tagDTO.getName());
+        Tag saved = tagRepository.save(tag);
+        return new TagDTO(saved);
+    }
+
+    public void deleteTag(Integer id) {
+        Tag tag = tagRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tag not found with id: " + id));
+        tagRepository.delete(tag);
+    }
+
+    public List<SkillTypeDTO> getAllSkillTypes() {
+        return skillTypeRepository.findAll().stream()
+                .map(SkillTypeDTO::new)
+                .toList();
+    }
+
+    public SkillTypeDTO createSkillType(SkillTypeDTO skillTypeDTO) {
+        if (skillTypeRepository.existsByName(skillTypeDTO.getName())) {
+            throw new ResourceNotFoundException("Skill type already exists");
+        }
+
+        SkillType skillType = new SkillType();
+        skillType.setName(skillTypeDTO.getName());
+        SkillType saved = skillTypeRepository.save(skillType);
+        return new SkillTypeDTO(saved);
     }
 
     public List<TemplateSkillDTO> getSkillsForTemplate(Integer templateId) {
         return templateSkillRepository.findByTemplateId(templateId).stream()
-                .map(this::convertToTemplateSkillDTO).toList();
+                .map(TemplateSkillDTO::new)
+                .toList();
     }
 
-    public TemplateSkillDTO addSkillToTemplate(TemplateSkillDTO templateSkillDTO) {
-        if (templateSkillRepository.existsByTemplateIdAndSkillId(
-                templateSkillDTO.getTemplateId(), templateSkillDTO.getSkillId())) {
+    public TemplateSkillDTO addSkillToTemplate(TemplateSkillCreateDTO templateSkillDTO) {
+        TaskTemplate template = taskTemplateRepository.findById(templateSkillDTO.getTemplateId())
+                .orElseThrow(() -> new ResourceNotFoundException("Template not found with id: " + templateSkillDTO.getTemplateId()));
+
+        Skill skill = skillRepository.findById(templateSkillDTO.getSkillId())
+                .orElseThrow(() -> new ResourceNotFoundException("Skill not found with id: " + templateSkillDTO.getSkillId()));
+
+        if (templateSkillRepository.existsByTemplateIdAndSkillId(templateSkillDTO.getTemplateId(), templateSkillDTO.getSkillId())) {
             throw new SkillAlreadyExistsException("Skill already added to this template");
         }
 
         TemplateSkill templateSkill = new TemplateSkill();
-        templateSkill.setTemplate(new TaskTemplate(templateSkillDTO.getTemplateId()));
-        templateSkill.setSkill(new Skill(templateSkillDTO.getSkillId()));
+        templateSkill.setTemplate(template);
+        templateSkill.setSkill(skill);
         templateSkill.setLevel(templateSkillDTO.getLevel());
 
         TemplateSkill saved = templateSkillRepository.save(templateSkill);
-        return convertToTemplateSkillDTO(saved);
+        return new TemplateSkillDTO(saved);
     }
 
     public List<UserSkillDTO> getSkillsForUser(Integer userId) {
         return userSkillRepository.findByUserId(userId).stream()
                 .map(this::convertToUserSkillDTO).toList();
+    }
+
+    public List<SkillDTO> getSkillsForUserSimple(Integer userId) {
+        List<UserSkill> userSkills = userSkillRepository.findByUserId(userId);
+        return userSkills.stream()
+                .map(userSkill -> new SkillDTO(userSkill.getSkill()))
+                .toList();
     }
 
     public UserSkillDTO addSkillToUser(UserSkillDTO userSkillDTO) {
@@ -106,17 +203,6 @@ public class SkillService {
 
         UserSkill saved = userSkillRepository.save(userSkill);
         return convertToUserSkillDTO(saved);
-    }
-
-    public TagDTO createTag(TagDTO tagDTO) {
-        if (tagRepository.existsByName(tagDTO.getName())) {
-            throw new ResourceNotFoundException("Tag already exists");
-        }
-
-        Tag tag = new Tag();
-        tag.setName(tagDTO.getName());
-        Tag saved = tagRepository.save(tag);
-        return convertToTagDTO(saved);
     }
 
     public SkillDTO addTagToSkill(Integer skillId, Integer tagId) {
@@ -202,10 +288,6 @@ public class SkillService {
 
     private SkillDTO convertToSkillDTO(Skill skill) {
         return new SkillDTO(skill);
-    }
-
-    private TemplateSkillDTO convertToTemplateSkillDTO(TemplateSkill templateSkill) {
-        return new TemplateSkillDTO(templateSkill);
     }
 
     private UserSkillDTO convertToUserSkillDTO(UserSkill userSkill) {

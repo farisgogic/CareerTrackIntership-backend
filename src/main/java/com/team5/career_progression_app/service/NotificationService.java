@@ -147,6 +147,10 @@ public class NotificationService {
         createNotification(recipient, "Your role '" + roleName + "' has been removed.", NotificationEventType.ROLE_DELETED.getDescription(), NotificationType.ALERT);
     }
 
+    public void notifyRoleChanged(User recipient, String roleName) {
+        createNotification(recipient, "Role changed to: " + roleName, "Role changed", NotificationType.ALERT);
+    }
+
     private void createNotification(User recipient, String message, String title, NotificationType type) {
         Notification notification = new Notification();
         notification.setRecipient(recipient);

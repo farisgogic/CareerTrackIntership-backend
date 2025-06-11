@@ -21,6 +21,41 @@ public class SkillController {
         return skillService.getAllSkills();
     }
 
+    @PostMapping
+    public SkillDTO createSkill(@RequestBody SkillCreateDTO skillCreateDTO) {
+        return skillService.createSkill(skillCreateDTO);
+    }
+
+    @PutMapping("/{id}")
+    public SkillDTO updateSkill(@PathVariable Integer id, @RequestBody SkillCreateDTO skillCreateDTO) {
+        return skillService.updateSkill(id, skillCreateDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteSkill(@PathVariable Integer id) {
+        skillService.deleteSkill(id);
+    }
+
+    @GetMapping("/tags")
+    public List<TagDTO> getAllTags() {
+        return skillService.getAllTags();
+    }
+
+    @PostMapping("/tags")
+    public TagDTO createTag(@RequestBody TagDTO tagDTO) {
+        return skillService.createTag(tagDTO);
+    }
+
+    @PutMapping("/tags/{id}")
+    public TagDTO updateTag(@PathVariable Integer id, @RequestBody TagDTO tagDTO) {
+        return skillService.updateTag(id, tagDTO);
+    }
+
+    @DeleteMapping("/tags/{id}")
+    public void deleteTag(@PathVariable Integer id) {
+        skillService.deleteTag(id);
+    }
+
     @GetMapping("/types")
     public List<SkillTypeDTO> getAllSkillTypes() {
         return skillService.getAllSkillTypes();
@@ -31,14 +66,19 @@ public class SkillController {
         return skillService.createSkillType(skillTypeDTO);
     }
 
+    @GetMapping("/templates/{templateId}/skills")
+    public List<TemplateSkillDTO> getSkillsForTemplate(@PathVariable Integer templateId) {
+        return skillService.getSkillsForTemplate(templateId);
+    }
+
+    @PostMapping("/templates/skills")
+    public TemplateSkillDTO addSkillToTemplate(@RequestBody TemplateSkillCreateDTO templateSkillDTO) {
+        return skillService.addSkillToTemplate(templateSkillDTO);
+    }
+
     @GetMapping("/types/{skillTypeId}/skills")
     public List<SkillDTO> getSkillsByType(@PathVariable Integer skillTypeId) {
         return skillService.getSkillsByType(skillTypeId);
-    }
-
-    @PostMapping
-    public SkillDTO createSkill(@RequestBody SkillDTO skillDTO) {
-        return skillService.createSkill(skillDTO);
     }
 
     @GetMapping("/{skillId}/tags")
@@ -65,24 +105,14 @@ public class SkillController {
         return skillService.findUsersWithSimilarSkills(skillId, level);
     }
 
-    @PostMapping("/tags")
-    public TagDTO createTag(@RequestBody TagDTO tagDTO) {
-        return skillService.createTag(tagDTO);
-    }
-
-    @GetMapping("/templates/{templateId}/skills")
-    public List<TemplateSkillDTO> getSkillsForTemplate(@PathVariable Integer templateId) {
-        return skillService.getSkillsForTemplate(templateId);
-    }
-
-    @PostMapping("/templates/skills")
-    public TemplateSkillDTO addSkillToTemplate(@RequestBody TemplateSkillDTO templateSkillDTO) {
-        return skillService.addSkillToTemplate(templateSkillDTO);
-    }
-
     @GetMapping("/users/{userId}/skills")
     public List<UserSkillDTO> getSkillsForUser(@PathVariable Integer userId) {
         return skillService.getSkillsForUser(userId);
+    }
+
+    @GetMapping("/user/{userId}")
+    public List<SkillDTO> getSkillsForUserSimple(@PathVariable Integer userId) {
+        return skillService.getSkillsForUserSimple(userId);
     }
 
     @PostMapping("/users/skills")
