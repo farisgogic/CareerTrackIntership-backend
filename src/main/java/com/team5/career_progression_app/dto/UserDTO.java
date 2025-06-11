@@ -1,9 +1,7 @@
 package com.team5.career_progression_app.dto;
 
 import com.team5.career_progression_app.model.User;
-
 import lombok.*;
-
 import java.util.List;
 
 @Data
@@ -20,6 +18,7 @@ public class UserDTO {
     private boolean active;
     private String profilePictureUrl;
     private List<String> teamNames;
+    private List<UserSkillDTO> skills;
 
     public UserDTO(User user) {
         this.id = user.getId();
@@ -32,7 +31,10 @@ public class UserDTO {
         this.teamNames = user.getTeamMemberships()
                 .stream()
                 .map(membership -> membership.getTeam().getName())
-                .toList();    
+                .toList();
+        this.skills = user.getUserSkills()
+                .stream()
+                .map(UserSkillDTO::new)
+                .toList();
     }
-
 }
