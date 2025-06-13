@@ -17,7 +17,7 @@ import java.util.List;
 public class UserSkillDTO {
     private Integer userId;
     private Integer skillId;
-    private String skillName;
+    private String name;
     private String level;
     private SkillTypeDTO type;
     private List<TagDTO> tags;
@@ -25,7 +25,7 @@ public class UserSkillDTO {
     public UserSkillDTO(UserSkill userSkill) {
         this.userId = userSkill.getUser().getId();
         this.skillId = userSkill.getSkill().getId();
-        this.skillName = userSkill.getSkill().getName();
+        this.name = userSkill.getSkill().getName();
         this.level = userSkill.getLevel();
         this.type = new SkillTypeDTO(userSkill.getSkill().getSkillType());
         this.tags = userSkill.getSkill().getTags()
