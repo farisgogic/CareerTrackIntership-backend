@@ -15,4 +15,7 @@ public interface TemplateSkillRepository extends JpaRepository<TemplateSkill, In
     @Modifying
     @Query("DELETE FROM TemplateSkill ts WHERE ts.template.id = :templateId")
     void deleteByTemplateId(Integer templateId);
+    @Modifying
+    @Query("DELETE FROM TemplateSkill ts WHERE ts.skill.id = :skillId")
+    void deleteBySkillId(Integer skillId);
 }

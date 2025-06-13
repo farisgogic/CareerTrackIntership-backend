@@ -21,7 +21,7 @@ public class Skill {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "skill_type_id", nullable = false)
+    @JoinColumn(name = "skill_type_id")
     private SkillType skillType;
 
     @ManyToMany

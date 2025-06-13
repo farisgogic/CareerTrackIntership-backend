@@ -6,6 +6,7 @@ import com.team5.career_progression_app.model.*;
 import com.team5.career_progression_app.repository.*;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -98,9 +99,12 @@ public class SkillService {
         return new SkillDTO(saved);
     }
 
+    @Transactional
     public void deleteSkill(Integer id) {
         Skill skill = skillRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Skill not found with id: " + id));
+        templateSkillRepository.deleteBySkillId(id);
+        userSkillRepository.deleteBySkillId(id);
         skillRepository.delete(skill);
     }
 
