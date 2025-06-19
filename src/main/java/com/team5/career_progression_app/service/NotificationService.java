@@ -147,6 +147,24 @@ public class NotificationService {
         createNotification(recipient, "Your role '" + roleName + "' has been removed.", NotificationEventType.ROLE_DELETED.getDescription(), NotificationType.ALERT);
     }
 
+    public void notifyEligibleForPromotion(User user) {
+        createNotification(
+            user,
+            "Congratulations! You have completed all your tasks and are now eligible for a promotion. Your promotion request has been forwarded.",
+            "Eligible for Promotion",
+            NotificationType.PROMOTION
+        );
+    }
+
+    public void notifyPromotionRequestToAdmin(User admin, User promotedUser) {
+        createNotification(
+            admin,
+            "New promotion request: " + promotedUser.getFirstName() + " " + promotedUser.getLastName(),
+            "Promotion Request",
+            NotificationType.PROMOTION
+        );
+    }
+
     private void createNotification(User recipient, String message, String title, NotificationType type) {
         Notification notification = new Notification();
         notification.setRecipient(recipient);

@@ -95,4 +95,34 @@ public class TaskController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Task updated successfully", updatedTask));
     }
 
+    @GetMapping("/team-lead/{teamLeadId}/in-review")
+    public ApiResponse<PaginatedResponse<TaskDTO>> getTasksInReviewForTeamLead(
+            @PathVariable Integer teamLeadId,
+            @RequestParam(required = false) Integer userId,
+            @RequestParam(required = false) String searchQuery,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        
+        PaginatedResponse<TaskDTO> response = taskService.getTasksInReviewForTeamLead(teamLeadId, userId, searchQuery, page, size);
+        return new ApiResponse<>(true, "Tasks in review fetched successfully", response);
+    }
+
+    @PutMapping("/{taskId}/review")
+    public ApiResponse<TaskDTO> reviewTask(
+            @PathVariable Integer taskId,
+            @RequestBody ReviewDTO reviewDTO,
+            @RequestParam Integer reviewerId) {
+        
+        TaskDTO task = taskService.reviewTask(taskId, reviewDTO, reviewerId);
+        return new ApiResponse<>(true, "Task reviewed successfully", task);
+    }
+
+    @PutMapping("/{taskId}/status")
+    public ResponseEntity<ApiResponse<TaskDTO>> updateTaskStatus(
+            @PathVariable Integer taskId,
+            @RequestBody TaskStatusUpdateRequest request) {
+        TaskDTO updatedTask = taskService.updateTaskStatus(taskId, request.getStatus());
+        return ResponseEntity.ok(new ApiResponse<>(true, "Task status updated successfully", updatedTask));
+    }
+
 }

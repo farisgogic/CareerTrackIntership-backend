@@ -54,4 +54,6 @@ public interface UserRepository extends JpaRepository<User, Integer>,
         """)
     List<User> findUsersByFilters(@Param("positionIds") List<Integer> positionIds, 
                                  @Param("teamIds") List<Integer> teamIds);
+
+    List<User> findByRoleName(String roleName);
 }

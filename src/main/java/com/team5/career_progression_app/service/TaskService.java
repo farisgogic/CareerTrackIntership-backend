@@ -9,6 +9,8 @@ import com.team5.career_progression_app.repository.NotificationRepository;
 import com.team5.career_progression_app.repository.TaskRepository;
 import com.team5.career_progression_app.repository.TaskTemplateRepository;
 import com.team5.career_progression_app.repository.UserRepository;
+import com.team5.career_progression_app.repository.PromotionRequestRepository;
+import com.team5.career_progression_app.repository.TaskCommentRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,6 +34,8 @@ public class TaskService {
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
     private final NotificationService notificationService;
+    private final PromotionRequestRepository promotionRequestRepository;
+    private final TaskCommentRepository taskCommentRepository;
 
     public PaginatedResponse<TaskDTO> getTasksByUserId(Integer userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -196,5 +200,98 @@ public class TaskService {
             Task updatedTask = taskRepository.save(task);
             return new TaskDTO(updatedTask);
         }
+    }
+
+    public PaginatedResponse<TaskDTO> getTasksInReviewForTeamLead(Integer teamLeadId, Integer userId, String searchQuery, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        String likePattern = searchQuery != null ? "%" + searchQuery.toLowerCase() + "%" : null;
+        
+        Page<Task> taskPage = taskRepository.findTasksInReviewForTeamLead(teamLeadId, userId, searchQuery, likePattern, pageable);
+
+        List<TaskDTO> tasks = taskPage.getContent()
+                .stream()
+                .map(TaskDTO::new)
+                .collect(Collectors.toList());
+
+        return new PaginatedResponse<>(tasks, (int) taskPage.getTotalElements(), taskPage.getNumber(), taskPage.getSize(), taskPage.getTotalPages());
+    }
+
+    @Transactional
+    public TaskDTO reviewTask(Integer taskId, ReviewDTO reviewDTO, Integer reviewerId) {
+        Task task = getTaskOrThrow(taskId);
+        validateTaskStatus(task);
+        User reviewer = getUserOrThrow(reviewerId);
+        addReviewCommentIfPresent(task, reviewDTO, reviewer);
+        if (reviewDTO.isApproved()) {
+            task.setStatus(Status.DONE);
+            handlePromotionIfEligible(task);
+        } else {
+            task.setStatus(Status.IN_PROGRESS);
+        }
+        Task savedTask = taskRepository.save(task);
+        return new TaskDTO(savedTask);
+    }
+
+    private Task getTaskOrThrow(Integer taskId) {
+        return taskRepository.findById(taskId)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
+    }
+
+    private void validateTaskStatus(Task task) {
+        if (task.getStatus() != Status.IN_REVIEW) {
+            throw new InvalidRequestException("Task is not in review status");
+        }
+    }
+
+    private User getUserOrThrow(Integer userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Reviewer not found"));
+    }
+
+    private void addReviewCommentIfPresent(Task task, ReviewDTO reviewDTO, User reviewer) {
+        if (reviewDTO.getComment() != null && !reviewDTO.getComment().trim().isEmpty()) {
+            TaskComment comment = new TaskComment();
+            comment.setTask(task);
+            comment.setUser(task.getAssignedTo());
+            comment.setAuthor(reviewer);
+            comment.setMessage(reviewDTO.getComment());
+            task.getComments().add(comment);
+            taskCommentRepository.save(comment);
+        }
+    }
+
+    private void handlePromotionIfEligible(Task task) {
+        List<Task> remainingTasks = taskRepository.findByAssignedToIdAndStatusNot(
+                task.getAssignedTo().getId(), Status.DONE);
+        if (remainingTasks.isEmpty()) {
+            PromotionRequest promotionRequest = new PromotionRequest();
+            promotionRequest.setUser(task.getAssignedTo());
+            promotionRequest.setStatus(PromotionStatus.PENDING);
+            promotionRequest.setMessage("User has completed all assigned tasks and is eligible for promotion");
+            promotionRequestRepository.save(promotionRequest);
+            notificationService.notifyEligibleForPromotion(task.getAssignedTo());
+            List<User> admins = userRepository.findByRoleName("ADMIN");
+            if (!admins.isEmpty()) {
+                User admin = admins.get(0);
+                notificationService.notifyPromotionRequestToAdmin(admin, task.getAssignedTo());
+            }
+        }
+    }
+
+    public TaskDTO updateTaskStatus(Integer taskId, String statusStr) {
+        if (statusStr == null) {
+            throw new InvalidRequestException("Status must be provided");
+        }
+        Status status;
+        try {
+            status = Status.valueOf(statusStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidRequestException("Invalid status value. Allowed values: TODO, IN_PROGRESS, IN_REVIEW, DONE");
+        }
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + taskId));
+        task.setStatus(status);
+        Task savedTask = taskRepository.save(task);
+        return new TaskDTO(savedTask);
     }
 }

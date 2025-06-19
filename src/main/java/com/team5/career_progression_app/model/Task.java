@@ -42,7 +42,7 @@ public class Task {
     @JoinColumn(name = "template_id")
     private TaskTemplate template;
 
-    @OneToMany(mappedBy = "task")
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TaskComment> comments;
 
     @PrePersist

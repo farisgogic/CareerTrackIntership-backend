@@ -74,4 +74,24 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
         @Param("userId") Integer userId,
         @Param("templateId") Integer templateId
     );
+
+    @Query("""
+        SELECT DISTINCT task FROM Task task
+        JOIN task.assignedTo assignedTo
+        JOIN assignedTo.teamMemberships teamMembership
+        JOIN teamMembership.team team
+        WHERE team.lead.id = :teamLeadId
+        AND task.status = 'IN_REVIEW'
+        AND (:userId IS NULL OR task.assignedTo.id = :userId)
+        AND (:searchQuery IS NULL OR LOWER(task.title) LIKE LOWER(:likePattern))
+        """)
+    Page<Task> findTasksInReviewForTeamLead(
+            @Param("teamLeadId") Integer teamLeadId,
+            @Param("userId") Integer userId,
+            @Param("searchQuery") String searchQuery,
+            @Param("likePattern") String likePattern,
+            Pageable pageable
+    );
+
+    List<Task> findByAssignedToIdAndStatusNot(Integer userId, Status status);
 }
