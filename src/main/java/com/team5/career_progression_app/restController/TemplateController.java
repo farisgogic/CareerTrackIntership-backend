@@ -8,6 +8,10 @@ import com.team5.career_progression_app.service.TemplateService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import com.team5.career_progression_app.dto.AiGenerateTemplateRequestDTO;
+import com.team5.career_progression_app.dto.AiGeneratedTemplateDTO;
+import com.team5.career_progression_app.service.OpenAIService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +22,22 @@ import java.util.stream.Collectors;
 public class TemplateController {
 
     private final TemplateService templateService;
+    private final OpenAIService openAIService;
+    private final ObjectMapper objectMapper;
+
+    @PostMapping("/generate-template-data")
+    public AiGeneratedTemplateDTO generateTemplateData(@RequestBody AiGenerateTemplateRequestDTO request) throws Exception {
+        String baseMessage = "You are an AI assistant for a career progression app. Your task is to generate a complete learning template based on keywords. " +
+                "You MUST return a single, minified JSON object with no extra formatting or text outside the JSON. " +
+                "The JSON object must have these exact keys: 'suggestedName' (string), 'suggestedDescription' (string, Markdown formatted), 'suggestedRequirements' (string, Markdown formatted), and 'suggestedSkills' (an array of strings). " +
+                "The content should be in English. For 'suggestedDescription', include an overview, key topics, and links to resources. For 'suggestedRequirements', list prerequisites.";
+
+        String aiResponse = openAIService.prompt(baseMessage, request.getKeywords());
+
+        String cleanedJson = aiResponse.trim().replace("```json", "").replace("```", "");
+
+        return objectMapper.readValue(cleanedJson, AiGeneratedTemplateDTO.class);
+    }
 
     @PostMapping
     public TemplateDTO createTemplate(@Valid @RequestBody TemplateDTO templateDTO) {

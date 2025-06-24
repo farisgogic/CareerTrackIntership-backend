@@ -18,6 +18,7 @@ public class CareerProgressionAppApplication {
 		System.setProperty("DB_PASSWORD", dotenv.get("DB_PASSWORD"));
 		System.setProperty("GOOGLE_CLIENT_ID", dotenv.get("GOOGLE_CLIENT_ID"));
         System.setProperty("JWT_SECRET", dotenv.get("JWT_SECRET"));
+        System.setProperty("OPENAI_API_KEY", dotenv.get("OPENAI_API_KEY"));
 		
 		SpringApplication.run(CareerProgressionAppApplication.class, args);
 	}
