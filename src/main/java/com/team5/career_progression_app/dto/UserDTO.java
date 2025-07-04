@@ -19,6 +19,7 @@ public class UserDTO {
     private String profilePictureUrl;
     private List<String> teamNames;
     private List<UserSkillDTO> skills;
+    private RoleDTO role;
 
     public UserDTO(User user) {
         this.id = user.getId();
@@ -36,5 +37,10 @@ public class UserDTO {
                 .stream()
                 .map(UserSkillDTO::new)
                 .toList();
+        if (user.getRole() != null) {
+            this.role = new RoleDTO(user.getRole());
+        } else {
+            this.role = new RoleDTO(null, "NO_ROLE", List.of());
+        }
     }
 }

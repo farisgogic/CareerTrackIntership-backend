@@ -165,6 +165,27 @@ public class NotificationService {
         );
     }
 
+    public void notifyPromotionApproved(User recipient, String message) {
+        String notificationMessage = message != null && !message.trim().isEmpty() 
+            ? message 
+            : "Your promotion request has been approved!";
+        createNotification(
+            recipient,
+            notificationMessage,
+            "Promotion Approved",
+            NotificationType.PROMOTION
+        );
+    }
+
+    public void notifyPromotionRejected(User recipient, String message) {
+        createNotification(
+            recipient,
+            message,
+            "Promotion Rejected",
+            NotificationType.PROMOTION
+        );
+    }
+
     private void createNotification(User recipient, String message, String title, NotificationType type) {
         Notification notification = new Notification();
         notification.setRecipient(recipient);

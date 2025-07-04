@@ -11,6 +11,7 @@ public class TaskCommentDTO {
     private String message;
     private LocalDateTime createdAt;
     private Integer taskId;
+    private String taskTitle;
     private Integer authorId;
     private String authorName;
 
@@ -19,6 +20,7 @@ public class TaskCommentDTO {
         this.message = comment.getMessage();
         this.createdAt = comment.getCreatedAt();
         this.taskId = comment.getTask().getId();
+        this.taskTitle = comment.getTask().getTitle();
         this.authorId = comment.getAuthor().getId();
         this.authorName = comment.getAuthor().getFirstName() + " " + comment.getAuthor().getLastName();
     }

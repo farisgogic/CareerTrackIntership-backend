@@ -125,4 +125,10 @@ public class TaskController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Task status updated successfully", updatedTask));
     }
 
+    @GetMapping("/comments/user/{userId}")
+    public ApiResponse<List<TaskCommentDTO>> getCommentsForUser(@PathVariable Integer userId) {
+        List<TaskCommentDTO> comments = taskService.getCommentsForUser(userId);
+        return new ApiResponse<>(true, "Comments fetched successfully", comments);
+    }
+
 }

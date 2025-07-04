@@ -36,6 +36,7 @@ public class TaskService {
     private final NotificationService notificationService;
     private final PromotionRequestRepository promotionRequestRepository;
     private final TaskCommentRepository taskCommentRepository;
+    private final AIAnalysisService aiAnalysisService;
 
     public PaginatedResponse<TaskDTO> getTasksByUserId(Integer userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -268,6 +269,8 @@ public class TaskService {
             promotionRequest.setUser(task.getAssignedTo());
             promotionRequest.setStatus(PromotionStatus.PENDING);
             promotionRequest.setMessage("User has completed all assigned tasks and is eligible for promotion");
+            String aiReport = aiAnalysisService.generateAIAnalysisForUser(task.getAssignedTo().getId());
+            promotionRequest.setAiReport(aiReport);
             promotionRequestRepository.save(promotionRequest);
             notificationService.notifyEligibleForPromotion(task.getAssignedTo());
             List<User> admins = userRepository.findByRoleName("ADMIN");
@@ -294,4 +297,13 @@ public class TaskService {
         Task savedTask = taskRepository.save(task);
         return new TaskDTO(savedTask);
     }
+
+    public List<TaskCommentDTO> getCommentsForUser(Integer userId) {
+        return taskCommentRepository.findByUserId(userId)
+                .stream()
+                .map(TaskCommentDTO::new)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+
 }

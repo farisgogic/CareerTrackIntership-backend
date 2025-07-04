@@ -35,6 +35,9 @@ public class PromotionRequest {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(name = "ai_report", columnDefinition = "TEXT")
+    private String aiReport;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
