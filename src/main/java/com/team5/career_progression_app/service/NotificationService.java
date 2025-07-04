@@ -165,6 +165,28 @@ public class NotificationService {
         );
     }
 
+    public void notifyTaskApproved(User recipient, String taskName, String reviewerName) {
+        createNotification(
+            recipient,
+            "Your task '" + taskName + "' has been approved by " + reviewerName + ".",
+            "Task approved",
+            NotificationType.REVIEW
+        );
+    }
+
+    public void notifyTaskRejected(User recipient, String taskName, String reviewerName, String comment) {
+        String message = "Your task '" + taskName + "' has been rejected by " + reviewerName + ".";
+        if (comment != null && !comment.trim().isEmpty()) {
+            message += " Comment: " + comment;
+        }
+        createNotification(
+            recipient,
+            message,
+            "Task rejected",
+            NotificationType.REVIEW
+          );
+    }
+
     public void notifyPromotionApproved(User recipient, String message) {
         String notificationMessage = message != null && !message.trim().isEmpty() 
             ? message 

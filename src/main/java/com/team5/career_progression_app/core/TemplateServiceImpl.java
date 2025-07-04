@@ -1,5 +1,9 @@
 package com.team5.career_progression_app.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.team5.career_progression_app.dto.AiGenerateTemplateRequestDTO;
+import com.team5.career_progression_app.dto.AiGeneratedTemplateDTO;
+import com.team5.career_progression_app.dto.SkillDTO;
 import com.team5.career_progression_app.dto.TemplateDTO;
 import com.team5.career_progression_app.exception.ResourceNotFoundException;
 import com.team5.career_progression_app.model.Skill;
@@ -8,11 +12,14 @@ import com.team5.career_progression_app.model.TemplateSkill;
 import com.team5.career_progression_app.repository.SkillRepository;
 import com.team5.career_progression_app.repository.TaskTemplateRepository;
 import com.team5.career_progression_app.repository.TemplateSkillRepository;
+import com.team5.career_progression_app.service.OpenAIService;
+import com.team5.career_progression_app.service.SkillService;
 import com.team5.career_progression_app.service.TemplateService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,6 +28,9 @@ public class TemplateServiceImpl implements TemplateService {
     private final TaskTemplateRepository taskTemplateRepository;
     private final SkillRepository skillRepository;
     private final TemplateSkillRepository templateSkillRepository;
+    private final SkillService skillService;
+    private final OpenAIService openAIService;
+    private final ObjectMapper objectMapper;
 
     @Override
     public TemplateDTO createTemplate(TemplateDTO templateDTO) {
@@ -115,5 +125,27 @@ public class TemplateServiceImpl implements TemplateService {
         }
         
         return dto;
+    }
+
+    public AiGeneratedTemplateDTO generateTemplateWithAI(AiGenerateTemplateRequestDTO request) throws Exception {
+        List<SkillDTO> skillsWithTypes = skillService.getAllSkills();
+
+        List<String> allSkillNames = skillsWithTypes.stream()
+                .map(SkillDTO::getName)
+                .collect(Collectors.toList());
+        String skillsList = String.join(", ", allSkillNames);
+
+        String baseMessage = "You are an AI assistant for a career progression app. Your task is to generate a complete learning template based on keywords. " +
+                "You MUST return a single, minified JSON object with no extra formatting or text outside the JSON. " +
+                "The JSON object must have these exact keys: 'suggestedName' (string), 'suggestedDescription' (string, Markdown formatted), 'suggestedRequirements' (string, Markdown formatted), and 'suggestedSkills' (an array of strings). " +
+                "The content should be in English. For 'suggestedDescription', include an overview, key topics, and links to resources. For 'suggestedRequirements', list prerequisites. " +
+                "IMPORTANT: For 'suggestedSkills', first try to use skills from this existing list (these are examples of how a skill should look and be named): [" + skillsList + "]. " +
+                "For 'suggestedSkills', always return an array of individual skill names, each as a separate string, and use only the skill name, without any category or prefix. Example: [\"Swift\", \"Closures\", \"Optionals\", \"Protocols\"]. Do not use any prefixes like 'Uncategorized:' or 'Programming Language:'. " +
+                "If you believe a relevant skill is missing from this list, you are allowed to suggest a new skill, but only if it is truly important for the template and not already present. " +
+                "Always use the same naming style as the examples. Do not create duplicates or synonyms of existing skills.";
+
+        String aiResponse = openAIService.prompt(baseMessage, request.getKeywords());
+        String cleanedJson = aiResponse.trim().replace("```json", "").replace("```", "");
+        return objectMapper.readValue(cleanedJson, AiGeneratedTemplateDTO.class);
     }
 }

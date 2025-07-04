@@ -223,12 +223,19 @@ public class TaskService {
         validateTaskStatus(task);
         User reviewer = getUserOrThrow(reviewerId);
         addReviewCommentIfPresent(task, reviewDTO, reviewer);
+        
+        String reviewerName = reviewer.getFirstName() + " " + reviewer.getLastName();
+        User taskAssignee = task.getAssignedTo();
+        
         if (reviewDTO.isApproved()) {
             task.setStatus(Status.DONE);
             handlePromotionIfEligible(task);
+            notificationService.notifyTaskApproved(taskAssignee, task.getTitle(), reviewerName);
         } else {
             task.setStatus(Status.IN_PROGRESS);
+            notificationService.notifyTaskRejected(taskAssignee, task.getTitle(), reviewerName, reviewDTO.getComment());
         }
+        
         Task savedTask = taskRepository.save(task);
         return new TaskDTO(savedTask);
     }
