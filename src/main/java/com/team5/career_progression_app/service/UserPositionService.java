@@ -59,7 +59,11 @@ public class UserPositionService {
     public UserPositionDTO addUserPosition(Integer userId, Integer positionId, Integer level) {
         User user = userRepository.findById(userId).orElseThrow();
         Position position = positionRepository.findById(positionId).orElseThrow();
-        PositionLevel positionLevel = positionLevelRepository.findByLevelAndPositionId(level, positionId).orElseThrow();
+        PositionLevel positionLevel = positionLevelRepository.findByLevelAndPositionId(level, positionId)
+                .orElseThrow();
+
+        List<UserPosition> existing = userPositionRepository.findByUserId(userId);
+        userPositionRepository.deleteAll(existing);
 
         UserPosition userPosition = new UserPosition();
         userPosition.setUser(user);
@@ -67,13 +71,13 @@ public class UserPositionService {
         userPosition.setPositionLevel(positionLevel);
         userPositionRepository.save(userPosition);
 
-        Integer nextLevel = level + 1;
+        int nextLevel = level + 1;
         String description = positionLevel.getDescription();
-        String nextDescription = null;
-        PositionLevel nextPositionLevel = positionLevelRepository.findByLevelAndPositionId(nextLevel, positionId).orElse(null);
-        if (nextPositionLevel != null) {
-            nextDescription = nextPositionLevel.getDescription();
-        }
+        String nextDescription = positionLevelRepository
+                .findByLevelAndPositionId(nextLevel, positionId)
+                .map(PositionLevel::getDescription)
+                .orElse(null);
+
         return new UserPositionDTO(userId, positionId, level, nextLevel, description, nextDescription);
     }
 }

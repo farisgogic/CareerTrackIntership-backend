@@ -10,13 +10,13 @@ public class OpenAIService {
     OpenAIClient client = OpenAIOkHttpClient.builder()
     // Configures using the OPENAI_API_KEY, OPENAI_ORG_ID, OPENAI_PROJECT_ID and OPENAI_BASE_URL environment variables
     .fromEnv()
-    .apiKey("")
+    .apiKey("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")
     .build();
 
     public String prompt(String baseMessage, String userRequest) {
         ChatCompletionCreateParams.Builder createParamsBuilder =
                 ChatCompletionCreateParams.builder()
-                        .model("gpt-4o-mini")
+                        .model("gpt-4.1-mini")
                         .maxCompletionTokens(8192);
 
         ChatCompletionCreateParams createParams = createParamsBuilder
@@ -36,7 +36,7 @@ public class OpenAIService {
     public String generateAnalysis(String prompt) {
         ChatCompletionCreateParams.Builder createParamsBuilder =
                 ChatCompletionCreateParams.builder()
-                        .model("gpt-4o-mini")
+                        .model("gpt-4.1-mini")
                         .maxCompletionTokens(8192);
 
         ChatCompletionCreateParams createParams = createParamsBuilder

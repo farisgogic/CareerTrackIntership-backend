@@ -16,6 +16,7 @@ public class PromotionRequestDTO {
     private LocalDateTime updatedAt;
     private Integer userId;
     private String message;
+    private String ai_report;
 
     public PromotionRequestDTO(PromotionRequest req) {
         this(
@@ -24,7 +25,8 @@ public class PromotionRequestDTO {
             req.getCreatedAt(),
             req.getUpdatedAt(),
             req.getUser().getId(),
-            req.getMessage()
+            req.getMessage(),
+                req.getAiReport()
         );
     }
 }
