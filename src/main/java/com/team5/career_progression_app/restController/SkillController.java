@@ -119,4 +119,11 @@ public class SkillController {
     public UserSkillDTO addSkillToUser(@RequestBody UserSkillDTO userSkillDTO) {
         return skillService.addSkillToUser(userSkillDTO);
     }
+
+    @PutMapping("/users/{userId}/skills")
+    public void updateSkillsForUser(
+            @PathVariable Integer userId,
+            @RequestBody List<Integer> skillIds) {
+        skillService.updateUserSkills(userId, skillIds);
+    }
 }

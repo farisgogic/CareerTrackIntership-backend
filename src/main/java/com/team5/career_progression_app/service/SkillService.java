@@ -20,19 +20,22 @@ public class SkillService {
     private final TemplateSkillRepository templateSkillRepository;
     private final TaskTemplateRepository taskTemplateRepository;
     private final UserSkillRepository userSkillRepository;
+    private final UserRepository userRepository;
 
-    public SkillService(SkillRepository skillRepository, 
+    public SkillService(SkillRepository skillRepository,
                        SkillTypeRepository skillTypeRepository,
                        TagRepository tagRepository,
                        TemplateSkillRepository templateSkillRepository,
                        TaskTemplateRepository taskTemplateRepository,
-                       UserSkillRepository userSkillRepository) {
+                       UserSkillRepository userSkillRepository,
+                        UserRepository userRepository) {
         this.skillRepository = skillRepository;
         this.skillTypeRepository = skillTypeRepository;
         this.tagRepository = tagRepository;
         this.templateSkillRepository = templateSkillRepository;
         this.taskTemplateRepository = taskTemplateRepository;
         this.userSkillRepository = userSkillRepository;
+        this.userRepository = userRepository;
     }
 
     public List<SkillDTO> getAllSkills() {
@@ -300,5 +303,25 @@ public class SkillService {
 
     private TagDTO convertToTagDTO(Tag tag) {
         return new TagDTO(tag.getId(), tag.getName());
+    }
+
+    @Transactional
+    public void updateUserSkills(Integer userId, List<Integer> skillIds) {
+        userSkillRepository.deleteByUserId(userId);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+
+        List<Skill> skills = skillRepository.findAllById(skillIds);
+
+        List<UserSkill> userSkills = skills.stream().map(skill -> {
+            UserSkill us = new UserSkill();
+            us.setUser(user);         // attachovan entitet
+            us.setSkill(skill);       // attachovan entitet
+            us.setLevel("BEGINNER");
+            return us;
+        }).toList();
+
+        userSkillRepository.saveAll(userSkills);
     }
 }
