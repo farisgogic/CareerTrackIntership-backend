@@ -81,7 +81,9 @@ public class SkillService {
         Skill skill = skillRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Skill not found with id: " + id));
 
-        skill.setName(skillCreateDTO.getName());
+        if (skillCreateDTO.getName() != null && !skill.getName().equals(skillCreateDTO.getName())) {
+            skill.setName(skillCreateDTO.getName());
+        }
 
         if (skillCreateDTO.getTypeId() != null) {
             SkillType skillType = skillTypeRepository.findById(skillCreateDTO.getTypeId())
@@ -95,7 +97,14 @@ public class SkillService {
                     .map(tagId -> tagRepository.findById(tagId)
                             .orElseThrow(() -> new ResourceNotFoundException("Tag not found with id: " + tagId)))
                     .toList();
-            skill.setTags(tags);
+
+            if (skill.getTags() == null) {
+                skill.setTags(new ArrayList<>());
+            } else {
+                skill.getTags().clear();
+            }
+
+            skill.getTags().addAll(tags);
         }
 
         Skill saved = skillRepository.save(skill);
